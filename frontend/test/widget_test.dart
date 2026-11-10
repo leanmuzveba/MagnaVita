@@ -40,7 +40,14 @@ Uint8List? backupFile;
 
 /// Boots the real app on an in-memory database with a fake clock.
 
-Future<FakeClock> pumpApp(WidgetTester tester, {AgeEligibility eligibility = AgeEligibility.adult}) async {
+late FakeAccountService accounts;
+
+/// [accountChosen]: the account step is already done (used without one).
+Future<FakeClock> pumpApp(
+  WidgetTester tester, {
+  AgeEligibility eligibility = AgeEligibility.adult,
+  bool accountChosen = true,
+}) async {
   await loadAppFonts();
   final clock = FakeClock(DateTime(2026, 10, 4, 7, 24, 36));
   final db = await openTestDb();
@@ -54,6 +61,7 @@ Future<FakeClock> pumpApp(WidgetTester tester, {AgeEligibility eligibility = Age
   watch = FakeHealthSource();
   latestRelease = null;
   backupFile = null;
+  accounts = FakeAccountService();
   final container = ProviderContainer(
     overrides: [
       databaseProvider.overrideWithValue(db),
@@ -68,6 +76,7 @@ Future<FakeClock> pumpApp(WidgetTester tester, {AgeEligibility eligibility = Age
       updateCheckerProvider.overrideWithValue(FakeUpdateChecker(() => latestRelease)),
       mealPhotoPickerProvider.overrideWithValue((_) async => onePixelPng),
       backupPickerProvider.overrideWithValue(() async => backupFile),
+      accountServiceProvider.overrideWithValue(accounts),
       // Test-driven ticks instead of a real periodic timer.
       nowProvider.overrideWith((ref) async* {
         yield clock();
@@ -78,6 +87,7 @@ Future<FakeClock> pumpApp(WidgetTester tester, {AgeEligibility eligibility = Age
   await container
       .read(settingsRepositoryProvider)
       .save(AppSettings(eligibility: eligibility, onboardingComplete: eligibility != AgeEligibility.unknown));
+  if (accountChosen) await container.read(settingsRepositoryProvider).setFlag('account.local', true);
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);

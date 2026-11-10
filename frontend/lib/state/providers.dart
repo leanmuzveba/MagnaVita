@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../data/account.dart';
 import '../data/activity_repository.dart';
 import '../data/backup.dart';
 import '../data/body_repository.dart';
@@ -1519,6 +1520,58 @@ class WatchActions {
 }
 
 final watchActionsProvider = Provider(WatchActions.new);
+
+// --- Account (Supabase) --------------------------------------------------------------
+
+final accountServiceProvider = Provider<AccountService>((ref) => SupabaseAccountService());
+
+/// Who's signed in (null when nobody).
+final accountProvider = StreamProvider<Account?>((ref) async* {
+  final service = ref.watch(accountServiceProvider);
+  yield service.current;
+  yield* service.changes;
+});
+
+/// You chose to use MagnaVita without an account (data on this phone only).
+final localOnlyProvider = FutureProvider<bool>((ref) => ref.watch(settingsRepositoryProvider).flag('account.local'));
+
+class AccountActions {
+  AccountActions(this._ref);
+  final Ref _ref;
+
+  AccountService get _service => _ref.read(accountServiceProvider);
+
+  /// After signing in or up: use the account's name if you haven't set one.
+  Future<void> signedIn({String? name}) async {
+    final s = await _ref.read(settingsProvider.future);
+    final fromAccount = (name ?? _service.current?.name ?? '').trim();
+    if (s.userName.trim().isEmpty && fromAccount.isNotEmpty) {
+      await _ref.read(settingsProvider.notifier).save(s.copyWith(userName: fromAccount));
+    }
+    await _ref.read(settingsRepositoryProvider).setFlag('account.local', false);
+    _ref.invalidate(localOnlyProvider);
+    _ref.invalidate(accountProvider);
+  }
+
+  Future<void> useWithoutAccount() async {
+    await _ref.read(settingsRepositoryProvider).setFlag('account.local', true);
+    _ref.invalidate(localOnlyProvider);
+  }
+
+  /// Signs out; what's on this phone stays.
+  Future<void> signOut() async {
+    await _service.signOut();
+    _ref.invalidate(accountProvider);
+  }
+
+  /// Deletes the account and its profile; what's on this phone stays.
+  Future<void> deleteAccount() async {
+    await _service.deleteAccount();
+    _ref.invalidate(accountProvider);
+  }
+}
+
+final accountActionsProvider = Provider(AccountActions.new);
 
 // --- App updates (published to the release page by tool/release.py) ----------------
 

@@ -2178,6 +2178,129 @@ class AppLocalizationsEn extends AppLocalizations {
       'A projection, not a promise: water, hormones and how your body adapts all move the scale.';
 
   @override
+  String get authCreateTitle => 'Create your account';
+
+  @override
+  String get authSignInTitle => 'Welcome back';
+
+  @override
+  String get authWhy =>
+      'Your account keeps your profile and goals safe, so signing in on a new phone brings them back. Your diary, kitchen and workouts stay on this phone.';
+
+  @override
+  String get authName => 'Name';
+
+  @override
+  String get authEmail => 'Email';
+
+  @override
+  String get authPassword => 'Password';
+
+  @override
+  String get authShowPassword => 'Show password';
+
+  @override
+  String get authHidePassword => 'Hide password';
+
+  @override
+  String get authCreate => 'Create account';
+
+  @override
+  String get authSignIn => 'Sign in';
+
+  @override
+  String get authOr => 'or';
+
+  @override
+  String get authGoogle => 'Continue with Google';
+
+  @override
+  String get authHaveAccount => 'Already have an account? Sign in';
+
+  @override
+  String get authNeedAccount => 'New here? Create an account';
+
+  @override
+  String get authSkip => 'Continue without an account';
+
+  @override
+  String get authSkipSub => 'Everything stays on this phone only. You can sign in later in Profile → Account.';
+
+  @override
+  String get authNameNeeded => 'Please enter your name.';
+
+  @override
+  String get authEmailInvalid => 'Please enter a valid email address.';
+
+  @override
+  String authPasswordShort(int count) {
+    return 'Use at least $count characters.';
+  }
+
+  @override
+  String authConfirmEmail(String email) {
+    return 'Almost there: we sent a link to $email. Tap it to confirm, then sign in here.';
+  }
+
+  @override
+  String get authWrongPassword => 'That email and password don’t match.';
+
+  @override
+  String get authEmailTaken => 'There’s already an account with that email — sign in instead.';
+
+  @override
+  String get authWeakPassword => 'That password is too easy to guess. Try a longer one.';
+
+  @override
+  String get authNotConfirmed => 'Please confirm your email first — check your inbox for the link.';
+
+  @override
+  String get authOffline => 'You’re offline. Connect to the internet and try again.';
+
+  @override
+  String get authGoogleNotSetUp => 'Google sign-in isn’t available yet. Use your email for now.';
+
+  @override
+  String get authCanceled => 'Sign-in was cancelled.';
+
+  @override
+  String get authFailed => 'Something went wrong. Please try again.';
+
+  @override
+  String get accountSection => 'Account';
+
+  @override
+  String get accountSignedIn => 'Signed in · profile and goals saved to your account';
+
+  @override
+  String get accountSignInOrCreate => 'Sign in or create an account';
+
+  @override
+  String get accountLocalSub => 'Keep your profile and goals safe if you change phones';
+
+  @override
+  String get accountSignOut => 'Sign out';
+
+  @override
+  String get accountSignOutTitle => 'Sign out?';
+
+  @override
+  String get accountSignOutBody => 'Everything on this phone stays. Sign in again any time.';
+
+  @override
+  String get accountDelete => 'Delete my account';
+
+  @override
+  String get accountDeleteSub => 'Removes your account and the profile saved in it';
+
+  @override
+  String get accountDeleteTitle => 'Delete your account?';
+
+  @override
+  String get accountDeleteBody =>
+      'Your account and the profile and goals saved in it are deleted for good. What’s on this phone stays; use “Delete all data” to remove that too.';
+
+  @override
   String get bodyHistory => 'Weight history';
 
   @override

@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
+
+import 'core/config.dart';
 import 'core/l10n.dart';
 import 'core/theme/app_theme.dart';
 import 'data/app_database.dart';
 import 'domain/settings.dart';
+import 'features/account/auth_screen.dart';
 import 'features/onboarding/onboarding.dart';
 import 'features/shell/app_shell.dart';
 import 'features/splash/splash_screen.dart';
@@ -24,6 +28,7 @@ Future<void> main() async {
     ),
   );
   final db = await AppDatabase.open();
+  await Supabase.initialize(url: supabaseUrl, publishableKey: supabasePublishableKey);
   runApp(ProviderScope(overrides: [databaseProvider.overrideWithValue(db)], child: const LifeFastingApp()));
 }
 
@@ -44,7 +49,7 @@ class LifeFastingApp extends StatelessWidget {
 }
 
 /// Splash (until data has loaded and the splash has shown briefly), then
-/// onboarding → (adult) app, or (under 18) education-only screen.
+/// onboarding → (adult) account → app, or (under 18) education-only screen.
 class _Gate extends ConsumerStatefulWidget {
   const _Gate();
 
@@ -67,12 +72,16 @@ class _GateState extends ConsumerState<_Gate> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider).value;
-    final Widget page = settings == null || !_splashDone
+    final account = ref.watch(accountProvider);
+    final localOnly = ref.watch(localOnlyProvider).value;
+    final Widget page = settings == null || !_splashDone || localOnly == null || account.isLoading
         ? const SplashScreen()
         : !settings.onboardingComplete
         ? const OnboardingScreen()
         : settings.eligibility != AgeEligibility.adult
         ? const UnderageScreen()
+        : account.value == null && !localOnly
+        ? const AuthScreen()
         : const AppShell();
     return AnimatedSwitcher(
       duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 500),

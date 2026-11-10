@@ -14,6 +14,8 @@ import '../../core/widgets/ruva_logo.dart';
 import '../../core/widgets/sheet.dart';
 import '../../data/health_source.dart' show SourceTotals;
 import '../../domain/settings.dart';
+import '../../data/account.dart' show AuthFailure;
+import '../account/auth_screen.dart';
 import '../kitchen/kitchen_review_screen.dart';
 import '../history/history_screen.dart';
 import '../profile/profile_screen.dart';
@@ -98,6 +100,31 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: 26),
+        _SectionLabel(l.accountSection),
+        _Group(
+          children: [
+            if (ref.watch(accountProvider).value case final account?) ...[
+              _NavRow(icon: Icons.account_circle_outlined, title: account.email ?? account.name, subtitle: l.accountSignedIn),
+              _NavRow(icon: Icons.logout, title: l.accountSignOut, onTap: () => _confirmSignOut(context, ref)),
+              _NavRow(
+                icon: Icons.person_remove_outlined,
+                title: l.accountDelete,
+                subtitle: l.accountDeleteSub,
+                danger: true,
+                onTap: () => _confirmDeleteAccount(context, ref),
+              ),
+            ] else
+              _NavRow(
+                icon: Icons.login,
+                title: l.accountSignInOrCreate,
+                subtitle: l.accountLocalSub,
+                onTap: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute<void>(builder: (_) => const AuthScreen(fromSettings: true))),
+              ),
           ],
         ),
         const SizedBox(height: 26),
@@ -360,6 +387,60 @@ class SettingsScreen extends ConsumerWidget {
                   if (bytes == null) return;
                   final ok = await ref.read(sessionActionsProvider).restore(bytes).catchError((_) => false);
                   if (context.mounted) showRuvaSnack(context, ok ? l.restoreDone : l.restoreNotBackup);
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) => _confirm(
+    context,
+    title: context.l10n.accountSignOutTitle,
+    body: context.l10n.accountSignOutBody,
+    action: context.l10n.accountSignOut,
+    run: () => ref.read(accountActionsProvider).signOut(),
+  );
+
+  Future<void> _confirmDeleteAccount(BuildContext context, WidgetRef ref) => _confirm(
+    context,
+    title: context.l10n.accountDeleteTitle,
+    body: context.l10n.accountDeleteBody,
+    action: context.l10n.accountDelete,
+    run: () => ref.read(accountActionsProvider).deleteAccount(),
+  );
+
+  Future<void> _confirm(
+    BuildContext context, {
+    required String title,
+    required String body,
+    required String action,
+    required Future<void> Function() run,
+  }) => showAppSheet<void>(
+    context,
+    (ctx) => Gap16Column(
+      children: [
+        Semantics(header: true, child: Text(title, style: AppText.title)),
+        Text(body, style: AppText.body.copyWith(color: AppColors.textSecondary)),
+        Row(
+          children: [
+            Expanded(
+              child: PillButton(label: ctx.l10n.cancel, outlined: true, onPressed: () => Navigator.pop(ctx)),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: PillButton(
+                label: action,
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  final l = context.l10n;
+                  try {
+                    await run();
+                  } on AuthFailure catch (e) {
+                    if (context.mounted) showRuvaSnack(context, authProblemText(l, e.problem));
+                  }
                 },
               ),
             ),

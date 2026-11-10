@@ -365,6 +365,10 @@ class RuvaTextField extends StatelessWidget {
     this.errorText,
     this.onChanged,
     this.autofocus = false,
+    this.obscureText = false,
+    this.suffix,
+    this.autofillHints,
+    this.textInputAction,
   });
 
   final TextEditingController controller;
@@ -376,6 +380,10 @@ class RuvaTextField extends StatelessWidget {
   final String? errorText;
   final ValueChanged<String>? onChanged;
   final bool autofocus;
+  final bool obscureText;
+  final Widget? suffix;
+  final Iterable<String>? autofillHints;
+  final TextInputAction? textInputAction;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -389,11 +397,15 @@ class RuvaTextField extends StatelessWidget {
         maxLines: maxLines,
         autofocus: autofocus,
         onChanged: onChanged,
+        obscureText: obscureText,
+        autofillHints: autofillHints,
+        textInputAction: textInputAction,
         style: bold ? AppText.cardValue : AppText.body.copyWith(fontSize: 16),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: AppText.body.copyWith(color: AppColors.textSecondary),
           errorText: errorText,
+          suffixIcon: suffix,
           filled: true,
           fillColor: AppColors.lime200,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

@@ -3799,6 +3799,240 @@ abstract class AppLocalizations {
   /// **'A projection, not a promise: water, hormones and how your body adapts all move the scale.'**
   String get forecastEstimate;
 
+  /// No description provided for @authCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get authCreateTitle;
+
+  /// No description provided for @authSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get authSignInTitle;
+
+  /// No description provided for @authWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account keeps your profile and goals safe, so signing in on a new phone brings them back. Your diary, kitchen and workouts stay on this phone.'**
+  String get authWhy;
+
+  /// No description provided for @authName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get authName;
+
+  /// No description provided for @authEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get authEmail;
+
+  /// No description provided for @authPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authPassword;
+
+  /// No description provided for @authShowPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get authShowPassword;
+
+  /// No description provided for @authHidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get authHidePassword;
+
+  /// No description provided for @authCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get authCreate;
+
+  /// No description provided for @authSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authSignIn;
+
+  /// No description provided for @authOr.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get authOr;
+
+  /// No description provided for @authGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get authGoogle;
+
+  /// No description provided for @authHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get authHaveAccount;
+
+  /// No description provided for @authNeedAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'New here? Create an account'**
+  String get authNeedAccount;
+
+  /// No description provided for @authSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue without an account'**
+  String get authSkip;
+
+  /// No description provided for @authSkipSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything stays on this phone only. You can sign in later in Profile → Account.'**
+  String get authSkipSub;
+
+  /// No description provided for @authNameNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name.'**
+  String get authNameNeeded;
+
+  /// No description provided for @authEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address.'**
+  String get authEmailInvalid;
+
+  /// No description provided for @authPasswordShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least {count} characters.'**
+  String authPasswordShort(int count);
+
+  /// No description provided for @authConfirmEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost there: we sent a link to {email}. Tap it to confirm, then sign in here.'**
+  String authConfirmEmail(String email);
+
+  /// No description provided for @authWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'That email and password don’t match.'**
+  String get authWrongPassword;
+
+  /// No description provided for @authEmailTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'There’s already an account with that email — sign in instead.'**
+  String get authEmailTaken;
+
+  /// No description provided for @authWeakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'That password is too easy to guess. Try a longer one.'**
+  String get authWeakPassword;
+
+  /// No description provided for @authNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your email first — check your inbox for the link.'**
+  String get authNotConfirmed;
+
+  /// No description provided for @authOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re offline. Connect to the internet and try again.'**
+  String get authOffline;
+
+  /// No description provided for @authGoogleNotSetUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in isn’t available yet. Use your email for now.'**
+  String get authGoogleNotSetUp;
+
+  /// No description provided for @authCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in was cancelled.'**
+  String get authCanceled;
+
+  /// No description provided for @authFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get authFailed;
+
+  /// No description provided for @accountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountSection;
+
+  /// No description provided for @accountSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in · profile and goals saved to your account'**
+  String get accountSignedIn;
+
+  /// No description provided for @accountSignInOrCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or create an account'**
+  String get accountSignInOrCreate;
+
+  /// No description provided for @accountLocalSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your profile and goals safe if you change phones'**
+  String get accountLocalSub;
+
+  /// No description provided for @accountSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get accountSignOut;
+
+  /// No description provided for @accountSignOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get accountSignOutTitle;
+
+  /// No description provided for @accountSignOutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything on this phone stays. Sign in again any time.'**
+  String get accountSignOutBody;
+
+  /// No description provided for @accountDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my account'**
+  String get accountDelete;
+
+  /// No description provided for @accountDeleteSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes your account and the profile saved in it'**
+  String get accountDeleteSub;
+
+  /// No description provided for @accountDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get accountDeleteTitle;
+
+  /// No description provided for @accountDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account and the profile and goals saved in it are deleted for good. What’s on this phone stays; use “Delete all data” to remove that too.'**
+  String get accountDeleteBody;
+
   /// No description provided for @bodyHistory.
   ///
   /// In en, this message translates to:

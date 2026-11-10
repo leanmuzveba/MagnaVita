@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:life_fasting/data/account.dart';
 import 'package:life_fasting/data/app_database.dart';
 import 'package:life_fasting/data/food_facts_api.dart';
 import 'package:life_fasting/data/health_source.dart';
@@ -38,6 +39,7 @@ Future<ProviderContainer> testContainer(Database db, FakeClock clock) async {
       clockProvider.overrideWithValue(clock.call),
       notificationServiceProvider.overrideWithValue(FakeNotifications()),
       recipeApiProvider.overrideWithValue(FakeRecipeApi()),
+      accountServiceProvider.overrideWithValue(FakeAccountService()),
     ],
   );
   await c.read(settingsProvider.future);
@@ -70,6 +72,72 @@ Future<void> loadAppFonts() async {
     await (FontLoader('MaterialIcons')..addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync())))).load();
   }
   _fontsLoaded = true;
+}
+
+/// Accounts without a server: one known user, a profile row in memory.
+class FakeAccountService implements AccountService {
+  FakeAccountService({this.confirmEmail = false});
+
+  /// Sign-up needs an email confirmation before signing in.
+  bool confirmEmail;
+  final users = <String, ({String password, String name})>{'ann@example.com': (password: 'correct horse', name: 'Ann')};
+  Map<String, dynamic>? profile;
+  bool googleWorks = false;
+  bool deleted = false;
+  Account? _current;
+  final _changes = StreamController<Account?>.broadcast();
+
+  void _set(Account? a) {
+    _current = a;
+    _changes.add(a);
+  }
+
+  @override
+  Account? get current => _current;
+
+  @override
+  Stream<Account?> get changes => _changes.stream;
+
+  @override
+  Future<SignUpResult> signUp({required String name, required String email, required String password}) async {
+    if (users.containsKey(email)) throw const AuthFailure(AuthProblem.emailTaken);
+    users[email] = (password: password, name: name);
+    profile = {'display_name': name};
+    if (confirmEmail) return SignUpResult.confirmEmail;
+    _set(Account(id: email, email: email, name: name));
+    return SignUpResult.signedIn;
+  }
+
+  @override
+  Future<void> signIn({required String email, required String password}) async {
+    final u = users[email];
+    if (u == null || u.password != password) throw const AuthFailure(AuthProblem.invalidCredentials);
+    _set(Account(id: email, email: email, name: u.name));
+  }
+
+  @override
+  Future<void> signInWithGoogle() async {
+    if (!googleWorks) throw const AuthFailure(AuthProblem.googleNotSetUp);
+    _set(const Account(id: 'g', email: 'g@gmail.com', name: 'Gee'));
+  }
+
+  @override
+  Future<void> signOut() async => _set(null);
+
+  @override
+  Future<void> deleteAccount() async {
+    deleted = true;
+    profile = null;
+    _set(null);
+  }
+
+  @override
+  Future<Map<String, dynamic>?> fetchProfile() async => _current == null ? null : profile;
+
+  @override
+  Future<void> saveProfile(Map<String, Object?> fields) async {
+    if (_current != null) profile = {...?profile, ...fields};
+  }
 }
 
 /// Records what would be scheduled instead of calling the OS.
