@@ -9,6 +9,7 @@ import '../../core/widgets/pill_button.dart';
 import '../../core/widgets/ruva_kit.dart';
 import '../../core/widgets/sheet.dart';
 import '../../domain/activity.dart';
+import '../../domain/goals.dart';
 import '../../domain/plan.dart';
 import '../../domain/workout.dart';
 import '../../state/providers.dart';
@@ -345,10 +346,12 @@ class _PlanSetup extends ConsumerStatefulWidget {
 }
 
 class _PlanSetupState extends ConsumerState<_PlanSetup> {
-  late var _goal = widget.current?.goal ?? PlanGoal.muscle;
-  late var _days = widget.current?.days.length ?? 3;
-  late var _level = widget.current?.level ?? PlanLevel.beginner;
-  late var _equipment = widget.current?.equipment ?? PlanEquipment.gym;
+  // A new plan starts from your setup answers.
+  late final _setup = ref.read(userGoalsProvider).value;
+  late var _goal = widget.current?.goal ?? (_setup?.main == null ? PlanGoal.muscle : planGoalFor(_setup!.main));
+  late var _days = widget.current?.days.length ?? planDaysFor(_setup?.trainingDays);
+  late var _level = widget.current?.level ?? _setup?.level ?? PlanLevel.beginner;
+  late var _equipment = widget.current?.equipment ?? _setup?.equipment ?? PlanEquipment.gym;
 
   @override
   Widget build(BuildContext context) {

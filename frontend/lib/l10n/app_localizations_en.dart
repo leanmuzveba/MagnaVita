@@ -2424,6 +2424,87 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setupDietSub => 'Recipes with your allergens are never suggested.';
 
   @override
+  String get focusYourGoal => 'Your goal';
+
+  @override
+  String get focusLoseTitle => 'Today, toward your goal weight';
+
+  @override
+  String get focusMaintainTitle => 'Today, keeping steady';
+
+  @override
+  String get focusMuscleTitle => 'Building muscle';
+
+  @override
+  String get focusFitterTitle => 'Getting fitter';
+
+  @override
+  String get focusEaten => 'Eaten';
+
+  @override
+  String get focusBurned => 'Burned';
+
+  @override
+  String get focusSteps => 'Steps';
+
+  @override
+  String get focusEstimate => 'estimate';
+
+  @override
+  String focusOf(String kcal) {
+    return 'of $kcal';
+  }
+
+  @override
+  String focusOfGrams(String grams) {
+    return 'of about $grams g';
+  }
+
+  @override
+  String focusEatenLabel(String eaten, String target) {
+    return '$eaten of $target kcal eaten today';
+  }
+
+  @override
+  String focusLeft(String kcal) {
+    return 'About $kcal kcal left today';
+  }
+
+  @override
+  String focusOver(String kcal) {
+    return '$kcal kcal over today — that’s fine, it evens out over the week.';
+  }
+
+  @override
+  String get focusSetUpCalories => 'Get a daily calorie target in Profile';
+
+  @override
+  String get focusWorkouts => 'workouts';
+
+  @override
+  String get focusProtein => 'Protein today';
+
+  @override
+  String get focusProteinWhy =>
+      'About 1.6 g of protein per kg of body weight a day helps muscles grow (a general guide).';
+
+  @override
+  String get focusActiveMinutes => 'Active minutes';
+
+  @override
+  String focusMinutesOf(int minutes, int target) {
+    return '$minutes of $target';
+  }
+
+  @override
+  String focusMinutesLeft(int minutes) {
+    return '$minutes more active minutes reach the 150 a week that health guidelines suggest.';
+  }
+
+  @override
+  String get focusMinutesDone => 'You’ve reached the 150 active minutes a week that health guidelines suggest.';
+
+  @override
   String get bodyHistory => 'Weight history';
 
   @override

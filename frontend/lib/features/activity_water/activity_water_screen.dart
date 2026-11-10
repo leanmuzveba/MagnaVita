@@ -9,11 +9,13 @@ import '../../core/widgets/ruva_kit.dart';
 import '../../core/widgets/ruva_logo.dart';
 import '../../core/widgets/sheet.dart';
 import '../../domain/activity.dart';
+import '../../domain/goals.dart';
 import '../../domain/hydration.dart';
 import '../../domain/settings.dart';
 import '../../domain/workout.dart';
 import '../../state/providers.dart';
 import '../hydration/hydration_screen.dart';
+import 'goal_focus_card.dart';
 import '../ring/fasting_ring.dart';
 import '../workout/exercise_picker.dart';
 import '../workout/plan_screen.dart';
@@ -360,6 +362,19 @@ class ActivityScreen extends ConsumerWidget {
     final l = context.l10n;
     final recent = ref.watch(recentActivitiesProvider).value ?? const [];
     final use24h = ref.watch(settingsProvider).value?.use24HourTime ?? false;
+    final goal = ref.watch(userGoalsProvider).value?.main;
+    const workout = _WorkoutCard();
+    const log = RuvaCard(padding: EdgeInsets.all(18), child: ActivityForm());
+    // Arranged around your goal: training first for muscle, the day's
+    // numbers first otherwise; fitness puts logging cardio before the gym.
+    final top = <Widget>[
+      if (goal != null && goal != MainGoal.fasting && goal != MainGoal.buildMuscle) GoalFocusCard(goal: goal),
+      ...switch (goal) {
+        MainGoal.buildMuscle => [workout, GoalFocusCard(goal: goal!)],
+        MainGoal.getFitter => [log, workout],
+        _ => [workout, log],
+      },
+    ];
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
       children: [
@@ -372,9 +387,7 @@ class ActivityScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 20),
-        const _WorkoutCard(),
-        const SizedBox(height: 14),
-        const RuvaCard(padding: EdgeInsets.all(18), child: ActivityForm()),
+        for (var i = 0; i < top.length; i++) ...[if (i > 0) const SizedBox(height: 14), top[i]],
         const SizedBox(height: 26),
         MonoLabel(l.activityRecent),
         const SizedBox(height: 12),

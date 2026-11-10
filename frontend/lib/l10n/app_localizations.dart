@@ -4267,6 +4267,138 @@ abstract class AppLocalizations {
   /// **'Recipes with your allergens are never suggested.'**
   String get setupDietSub;
 
+  /// No description provided for @focusYourGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal'**
+  String get focusYourGoal;
+
+  /// No description provided for @focusLoseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today, toward your goal weight'**
+  String get focusLoseTitle;
+
+  /// No description provided for @focusMaintainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today, keeping steady'**
+  String get focusMaintainTitle;
+
+  /// No description provided for @focusMuscleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building muscle'**
+  String get focusMuscleTitle;
+
+  /// No description provided for @focusFitterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting fitter'**
+  String get focusFitterTitle;
+
+  /// No description provided for @focusEaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Eaten'**
+  String get focusEaten;
+
+  /// No description provided for @focusBurned.
+  ///
+  /// In en, this message translates to:
+  /// **'Burned'**
+  String get focusBurned;
+
+  /// No description provided for @focusSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get focusSteps;
+
+  /// No description provided for @focusEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'estimate'**
+  String get focusEstimate;
+
+  /// No description provided for @focusOf.
+  ///
+  /// In en, this message translates to:
+  /// **'of {kcal}'**
+  String focusOf(String kcal);
+
+  /// No description provided for @focusOfGrams.
+  ///
+  /// In en, this message translates to:
+  /// **'of about {grams} g'**
+  String focusOfGrams(String grams);
+
+  /// No description provided for @focusEatenLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} of {target} kcal eaten today'**
+  String focusEatenLabel(String eaten, String target);
+
+  /// No description provided for @focusLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'About {kcal} kcal left today'**
+  String focusLeft(String kcal);
+
+  /// No description provided for @focusOver.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal over today — that’s fine, it evens out over the week.'**
+  String focusOver(String kcal);
+
+  /// No description provided for @focusSetUpCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Get a daily calorie target in Profile'**
+  String get focusSetUpCalories;
+
+  /// No description provided for @focusWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'workouts'**
+  String get focusWorkouts;
+
+  /// No description provided for @focusProtein.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein today'**
+  String get focusProtein;
+
+  /// No description provided for @focusProteinWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'About 1.6 g of protein per kg of body weight a day helps muscles grow (a general guide).'**
+  String get focusProteinWhy;
+
+  /// No description provided for @focusActiveMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Active minutes'**
+  String get focusActiveMinutes;
+
+  /// No description provided for @focusMinutesOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} of {target}'**
+  String focusMinutesOf(int minutes, int target);
+
+  /// No description provided for @focusMinutesLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} more active minutes reach the 150 a week that health guidelines suggest.'**
+  String focusMinutesLeft(int minutes);
+
+  /// No description provided for @focusMinutesDone.
+  ///
+  /// In en, this message translates to:
+  /// **'You’ve reached the 150 active minutes a week that health guidelines suggest.'**
+  String get focusMinutesDone;
+
   /// No description provided for @bodyHistory.
   ///
   /// In en, this message translates to:
