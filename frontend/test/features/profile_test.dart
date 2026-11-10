@@ -84,6 +84,12 @@ void main() {
     expect(find.bySemanticsLabel('Age: 35 years'), findsOneWidget);
     // BMR = 10·90 + 6.25·180 − 5·35 + 5
     expect(find.text('1,855 kcal a day'), findsOneWidget);
+    // No records yet: pick a level → calories to keep your weight steady.
+    expect(find.text('Calories to keep your weight steady'.toUpperCase()), findsNothing);
+    await tester.tap(find.text('Moderately active'));
+    await tester.pumpAndSettle();
+    expect(find.text('2,875 kcal a day'), findsOneWidget); // 1855 × 1.55
+    expect(find.textContaining('The level you chose.'), findsOneWidget);
 
     // History: delete the weigh-in → back to "add your weight".
     await tester.tap(find.byTooltip(RegExp('^90 kg on ')));

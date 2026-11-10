@@ -2009,6 +2009,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get energyNeeds => 'Add your height, weight, age and sex to see your resting energy.';
 
   @override
+  String get energyMaintain => 'Calories to keep your weight steady';
+
+  @override
+  String get energyLevel => 'How active you are';
+
+  @override
+  String energyMeasured(int days, String kcal) {
+    return 'Worked out from $days days of your activities and steps · about $kcal active kcal a day';
+  }
+
+  @override
+  String energyChosen(int days) {
+    return 'The level you chose. After $days days of activities or steps, MagnaVita works it out from your records.';
+  }
+
+  @override
+  String get energyPickLevel => 'How active are you on a usual day?';
+
+  @override
+  String get levelSedentary => 'Mostly sitting';
+
+  @override
+  String get levelLight => 'Lightly active';
+
+  @override
+  String get levelModerate => 'Moderately active';
+
+  @override
+  String get levelActive => 'Active';
+
+  @override
+  String get levelVeryActive => 'Very active';
+
+  @override
+  String get levelSedentarySub => 'Desk work, little walking';
+
+  @override
+  String get levelLightSub => 'Some walking, light exercise 1–3 days a week';
+
+  @override
+  String get levelModerateSub => 'On your feet a lot, or exercise 3–5 days a week';
+
+  @override
+  String get levelActiveSub => 'Hard exercise 6–7 days a week';
+
+  @override
+  String get levelVeryActiveSub => 'Physical job plus daily training';
+
+  @override
   String get bodyHistory => 'Weight history';
 
   @override

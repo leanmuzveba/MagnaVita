@@ -3541,6 +3541,96 @@ abstract class AppLocalizations {
   /// **'Add your height, weight, age and sex to see your resting energy.'**
   String get energyNeeds;
 
+  /// No description provided for @energyMaintain.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories to keep your weight steady'**
+  String get energyMaintain;
+
+  /// No description provided for @energyLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'How active you are'**
+  String get energyLevel;
+
+  /// No description provided for @energyMeasured.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked out from {days} days of your activities and steps · about {kcal} active kcal a day'**
+  String energyMeasured(int days, String kcal);
+
+  /// No description provided for @energyChosen.
+  ///
+  /// In en, this message translates to:
+  /// **'The level you chose. After {days} days of activities or steps, MagnaVita works it out from your records.'**
+  String energyChosen(int days);
+
+  /// No description provided for @energyPickLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'How active are you on a usual day?'**
+  String get energyPickLevel;
+
+  /// No description provided for @levelSedentary.
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly sitting'**
+  String get levelSedentary;
+
+  /// No description provided for @levelLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightly active'**
+  String get levelLight;
+
+  /// No description provided for @levelModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderately active'**
+  String get levelModerate;
+
+  /// No description provided for @levelActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get levelActive;
+
+  /// No description provided for @levelVeryActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Very active'**
+  String get levelVeryActive;
+
+  /// No description provided for @levelSedentarySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Desk work, little walking'**
+  String get levelSedentarySub;
+
+  /// No description provided for @levelLightSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Some walking, light exercise 1–3 days a week'**
+  String get levelLightSub;
+
+  /// No description provided for @levelModerateSub.
+  ///
+  /// In en, this message translates to:
+  /// **'On your feet a lot, or exercise 3–5 days a week'**
+  String get levelModerateSub;
+
+  /// No description provided for @levelActiveSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard exercise 6–7 days a week'**
+  String get levelActiveSub;
+
+  /// No description provided for @levelVeryActiveSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Physical job plus daily training'**
+  String get levelVeryActiveSub;
+
   /// No description provided for @bodyHistory.
   ///
   /// In en, this message translates to:

@@ -25,6 +25,7 @@ import '../data/step_counter.dart';
 import '../data/update_checker.dart';
 import '../domain/activity.dart';
 import '../domain/body.dart';
+import '../domain/energy.dart';
 import '../domain/fasting_session.dart';
 import '../domain/fasting_timer.dart';
 import '../domain/food.dart';
@@ -1197,7 +1198,10 @@ final todayStepsProvider = StreamProvider<StepsState>((ref) async* {
   try {
     await for (final reading in counter.readings()) {
       final day = book?.day;
+      final before = book;
       book = recordSteps(book, reading, now());
+      // A new day: keep the finished day's total (for activity level and exports).
+      if (before != null && book.day != day) await repo.setValue('steps.phone.${before.day}', '${before.today}');
       // Save on a new day, after a reboot, or every 50 steps.
       if (book.day != day || reading < saved || reading - saved >= 50) {
         await repo.saveStepBook(book.toJson());
@@ -1296,10 +1300,11 @@ final watchStepsSyncedProvider = FutureProvider<DateTime?>((ref) async {
 
 /// One day's movement, for the shareable stats image.
 class DayStats {
-  const DayStats({this.steps, this.km, this.kcal = 0, this.activeMinutes = 0});
-  final int? steps; // null when unknown (no watch and not today)
+  const DayStats({this.steps, this.km, this.kcal = 0, this.watchKcal, this.activeMinutes = 0});
+  final int? steps; // null when unknown (no watch, phone or own figure for the day)
   final double? km;
   final double kcal; // watch + activities you logged
+  final double? watchKcal; // the watch's part of [kcal]; null when not connected
   final int activeMinutes; // the watch's active time, else minutes you logged
 }
 
@@ -1312,11 +1317,13 @@ final dayStatsProvider = FutureProvider.family<DayStats, DateTime>((ref, day) as
   final activities = await ref.watch(activityDayProvider(day).future);
   var kcal = activities.where((a) => !a.fromWatch).fold(0.0, (s, a) => s + (a.kcal ?? 0));
   int? steps, active;
+  double? watchKcal;
   if (await ref.watch(watchStatusProvider.future) == WatchStatus.linked) {
     final hc = ref.watch(healthSourceProvider);
     try {
       steps = await hc.steps(day, to);
-      kcal += await hc.caloriesBurned(day, to) ?? 0;
+      watchKcal = await hc.caloriesBurned(day, to) ?? 0;
+      kcal += watchKcal;
       active = await hc.activeMinutes(day, to);
     } catch (_) {}
   }
@@ -1327,13 +1334,64 @@ final dayStatsProvider = FutureProvider.family<DayStats, DateTime>((ref, day) as
     if (phone != null || manual != null || steps != null) {
       steps = shownSteps(watch: steps, phone: phone, manual: manual).$1;
     }
-  } else if (manual != null && manual.steps > (steps ?? -1)) {
-    steps = manual.steps;
+  } else {
+    // Past days: the phone's total for the day (kept since November 2026) or your own figure.
+    final phone = int.tryParse(await ref.watch(settingsRepositoryProvider).value('steps.phone.${stepDayKey(day)}') ?? '');
+    for (final s in [phone, manual?.steps]) {
+      if (s != null && s > (steps ?? -1)) steps = s;
+    }
   }
   // From steps, exactly like the home card: the watch app's distance records
   // cover only part of the day's walking.
   final km = steps == null ? null : stepsToKm(steps, heightCm: (await ref.watch(bodyProfileProvider.future)).heightCm);
-  return DayStats(steps: steps, km: km, kcal: kcal, activeMinutes: active ?? totalMinutes(activities));
+  return DayStats(steps: steps, km: km, kcal: kcal, watchKcal: watchKcal, activeMinutes: active ?? totalMinutes(activities));
+});
+
+// --- Energy: maintenance calories from your records (profile) ------------------------
+
+/// Complete past days with something recorded (activities, watch or steps),
+/// from the day after you started using MagnaVita, up to the last 28.
+final pastMovementProvider = FutureProvider<List<DayMovement>>((ref) async {
+  final now = ref.read(clockProvider)().toLocal();
+  final today = DateTime(now.year, now.month, now.day);
+  var first = DateTime(today.year, today.month, today.day - measuredWindowDays);
+  final since = (await ref.watch(settingsProvider.future)).memberSince?.toLocal();
+  if (since != null) {
+    final next = DateTime(since.year, since.month, since.day + 1);
+    if (next.isAfter(first)) first = next;
+  }
+  return [
+    for (var d = first; d.isBefore(today); d = DateTime(d.year, d.month, d.day + 1))
+      if (await ref.watch(dayStatsProvider(d).future) case final s when s.kcal > 0 || s.steps != null)
+        DayMovement(loggedKcal: s.kcal - (s.watchKcal ?? 0), watchKcal: s.watchKcal, steps: s.steps),
+  ];
+});
+
+/// The activity level you chose (used until there are enough records).
+final chosenActivityLevelProvider = FutureProvider<ActivityLevel?>(
+  (ref) async => ActivityLevel.values.asNameMap()[await ref.watch(settingsRepositoryProvider).value('energy.level')],
+);
+
+Future<void> setChosenActivityLevel(WidgetRef ref, ActivityLevel level) async {
+  await ref.read(settingsRepositoryProvider).setValue('energy.level', level.name);
+  ref.invalidate(chosenActivityLevelProvider);
+}
+
+/// Resting energy and maintenance calories from your latest weigh-in; null
+/// for under-18s, without the needed details, or with weight tracking off.
+final energyProvider = FutureProvider<Energy?>((ref) async {
+  final profile = await ref.watch(bodyProfileProvider.future);
+  final weighIns = await ref.watch(weighInsProvider.future);
+  if (!profile.trackWeight || weighIns.isEmpty) return null;
+  final kg = weighIns.last.weightKg;
+  final resting = restingEnergy(profile, kg, ref.read(clockProvider)().toLocal());
+  if (resting == null) return null;
+  return energyFrom(
+    resting: resting,
+    weightKg: kg,
+    days: await ref.watch(pastMovementProvider.future),
+    chosen: await ref.watch(chosenActivityLevelProvider.future),
+  );
 });
 
 /// Imports the last week's watch workouts into Activity (once each).
