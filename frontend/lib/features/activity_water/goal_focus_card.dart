@@ -111,7 +111,7 @@ class _CaloriesCard extends ConsumerWidget {
     final food = ref.watch(diaryDayProvider(today)).value ?? const <FoodEntry>[];
     final eaten = DayTotals(food).sum[Nutrient.energy] ?? 0;
     final stats = ref.watch(dayStatsProvider(today)).value;
-    final target = ref.watch(calorieTargetProvider).value?.kcal ?? ref.watch(energyProvider).value?.maintenance;
+    final target = ref.watch(dailyCaloriesProvider).value;
     final title = goal == MainGoal.loseWeight ? l.focusLoseTitle : l.focusMaintainTitle;
     return _Frame(
       title: title,

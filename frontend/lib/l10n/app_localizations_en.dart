@@ -2505,6 +2505,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get focusMinutesDone => 'You’ve reached the 150 active minutes a week that health guidelines suggest.';
 
   @override
+  String homeCaloriesOf(String kcal) {
+    return 'of $kcal kcal today · estimated';
+  }
+
+  @override
+  String diaryMealGuide(String eaten, String guide) {
+    return '$eaten of about $guide kcal';
+  }
+
+  @override
   String get bodyHistory => 'Weight history';
 
   @override

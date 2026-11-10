@@ -4399,6 +4399,18 @@ abstract class AppLocalizations {
   /// **'You’ve reached the 150 active minutes a week that health guidelines suggest.'**
   String get focusMinutesDone;
 
+  /// No description provided for @homeCaloriesOf.
+  ///
+  /// In en, this message translates to:
+  /// **'of {kcal} kcal today · estimated'**
+  String homeCaloriesOf(String kcal);
+
+  /// No description provided for @diaryMealGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} of about {guide} kcal'**
+  String diaryMealGuide(String eaten, String guide);
+
   /// No description provided for @bodyHistory.
   ///
   /// In en, this message translates to:

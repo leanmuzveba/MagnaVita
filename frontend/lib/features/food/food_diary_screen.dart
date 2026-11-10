@@ -9,6 +9,7 @@ import '../../core/widgets/ruva_kit.dart';
 import '../../core/widgets/ruva_logo.dart';
 import '../../core/widgets/sheet.dart';
 import '../../domain/food.dart';
+import '../../domain/goals.dart';
 import '../../state/providers.dart';
 import '../kitchen/my_kitchen_screen.dart';
 import '../recipes/recipe_form_screen.dart';
@@ -154,6 +155,13 @@ class _FoodDiaryScreenState extends ConsumerState<FoodDiaryScreen> {
                   for (final meal in Meal.values) ...[
                     _MealCard(
                       meal: meal,
+                      guide: switch ((ref.watch(dailyCaloriesProvider).value, ref.watch(userGoalsProvider).value?.mealsPerDay)) {
+                        (final kcal?, final meals?) => switch (mealShares(meals)[meal]) {
+                          final share? => kcal * share,
+                          null => null,
+                        },
+                        _ => null,
+                      },
                       entries: [
                         for (final e in entries)
                           if (e.meal == meal) e,
@@ -385,10 +393,13 @@ class _Value extends StatelessWidget {
 }
 
 class _MealCard extends ConsumerWidget {
-  const _MealCard({required this.meal, required this.entries, required this.onAdd});
+  const _MealCard({required this.meal, required this.entries, required this.onAdd, this.guide});
   final Meal meal;
   final List<FoodEntry> entries;
   final VoidCallback onAdd;
+
+  /// Rough calories for this meal from your daily target and meals a day.
+  final double? guide;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -432,6 +443,14 @@ class _MealCard extends ConsumerWidget {
               RoundIconButton(icon: Icons.add, onTap: onAdd, tooltip: l.addFoodAddTo(name)),
             ],
           ),
+          if (guide case final g?)
+            Text(
+              l.diaryMealGuide(
+                formatNutrient((DayTotals(entries).sum[Nutrient.energy] ?? 0).roundToDouble()),
+                formatNutrient((g / 10).round() * 10.0),
+              ),
+              style: AppText.small.copyWith(fontSize: 12.5, color: AppColors.primary),
+            ),
           if (entries.isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 6),

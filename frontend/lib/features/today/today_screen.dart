@@ -54,6 +54,7 @@ class HomeScreen extends ConsumerWidget {
     ref.watch(watchSyncProvider); // pulls in new watch workouts (no-op when not connected)
     final food = ref.watch(diaryDayProvider(today)).value ?? const <FoodEntry>[];
     final kcal = DayTotals(food).sum[Nutrient.energy] ?? 0;
+    final kcalTarget = ref.watch(dailyCaloriesProvider).value;
     final water = (ref.watch(hydrationDayProvider(today)).value ?? const <HydrationEntry>[]).fold(
       0.0,
       (a, e) => a + e.amountMl,
@@ -126,7 +127,8 @@ class HomeScreen extends ConsumerWidget {
           label: l.homeCalories,
           value: n.format(kcal.round()),
           unit: 'kcal',
-          sub: l.homeCaloriesSub,
+          sub: kcalTarget == null ? l.homeCaloriesSub : l.homeCaloriesOf(n.format(kcalTarget.round())),
+          progress: kcalTarget == null ? null : (kcal / kcalTarget).clamp(0.0, 1.0),
           onTap: onOpenNutrition,
         ),
         const SizedBox(height: 12),

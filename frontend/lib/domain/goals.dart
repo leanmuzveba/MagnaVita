@@ -1,3 +1,4 @@
+import 'food.dart' show Meal;
 import 'plan.dart';
 
 /// What you mainly want from MagnaVita (asked at setup).
@@ -60,3 +61,12 @@ const mealsPerDayOptions = [2, 3, 4, 5];
 
 /// Training-days choices at setup.
 const trainingDayOptions = [0, 2, 3, 4, 5, 6];
+
+/// How a day's calories split over meals for [mealsPerDay] (a rough guide):
+/// two meals are lunch and dinner; snacks get a share from four meals up.
+Map<Meal, double> mealShares(int mealsPerDay) => switch (mealsPerDay) {
+  <= 2 => const {Meal.lunch: .5, Meal.dinner: .5},
+  3 => const {Meal.breakfast: .3, Meal.lunch: .35, Meal.dinner: .35},
+  4 => const {Meal.breakfast: .25, Meal.lunch: .3, Meal.dinner: .3, Meal.snacks: .15},
+  _ => const {Meal.breakfast: .2, Meal.lunch: .3, Meal.dinner: .3, Meal.snacks: .2},
+};

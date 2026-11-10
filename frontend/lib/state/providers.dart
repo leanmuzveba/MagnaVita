@@ -1425,6 +1425,17 @@ Future<void> setUserGoals(WidgetRef ref, UserGoals goals) async {
   ref.invalidate(userGoalsProvider);
 }
 
+/// Calories a day to aim for: your goal's target, or maintenance when your
+/// goal is to stay where you are; null otherwise.
+final dailyCaloriesProvider = FutureProvider<double?>((ref) async {
+  final target = await ref.watch(calorieTargetProvider.future);
+  if (target != null) return target.kcal;
+  final main = (await ref.watch(userGoalsProvider.future)).main;
+  return main == MainGoal.maintain || main == MainGoal.loseWeight
+      ? (await ref.watch(energyProvider.future))?.maintenance
+      : null;
+});
+
 /// Setup has been finished (or skipped) on this phone.
 final setupDoneProvider = FutureProvider<bool>((ref) => ref.watch(settingsRepositoryProvider).flag('setup.done'));
 

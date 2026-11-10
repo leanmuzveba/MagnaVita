@@ -125,4 +125,21 @@ void main() {
     expect(chosen('Intermediate'), isTrue);
     expect(chosen('No equipment'), isTrue);
   });
+
+  test('meals a day split the daily calories', () {
+    expect(mealShares(2), {Meal.lunch: .5, Meal.dinner: .5});
+    for (final n in [2, 3, 4, 5, 6]) {
+      expect(mealShares(n).values.reduce((a, b) => a + b), closeTo(1, 1e-9));
+    }
+  });
+
+  testWidgets('home shows calories against the target; the diary gives each meal a guide', (tester) async {
+    await pumpApp(tester, before: _goals(const UserGoals(main: MainGoal.loseWeight, mealsPerDay: 3), body: true));
+    expect(find.bySemanticsLabel(RegExp(r'^Calories eaten: 0 kcal\. of 2,325 kcal today')), findsOneWidget);
+    tester.view.physicalSize = const Size(390, 2400);
+    await tester.tap(find.bySemanticsLabel('Nutrition').last);
+    await tester.pumpAndSettle();
+    expect(find.text('0 of about 700 kcal'), findsOneWidget); // breakfast 30 %
+    expect(find.text('0 of about 810 kcal'), findsNWidgets(2)); // lunch and dinner 35 %
+  });
 }
