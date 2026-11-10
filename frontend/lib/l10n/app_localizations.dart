@@ -3727,6 +3727,78 @@ abstract class AppLocalizations {
   /// **'An estimate. Bodies adapt, so check your weigh-ins every few weeks and adjust. If you’re pregnant, breastfeeding, have a medical condition or a history of disordered eating, talk to a healthcare professional first.'**
   String get goalEstimate;
 
+  /// No description provided for @forecastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight forecast'**
+  String get forecastTitle;
+
+  /// No description provided for @forecastIn.
+  ///
+  /// In en, this message translates to:
+  /// **'In {weeks} weeks: about {weight}'**
+  String forecastIn(int weeks, String weight);
+
+  /// No description provided for @forecastReach.
+  ///
+  /// In en, this message translates to:
+  /// **'Reaches {goal} around {date}'**
+  String forecastReach(String goal, String date);
+
+  /// No description provided for @forecastNotReached.
+  ///
+  /// In en, this message translates to:
+  /// **'{goal} isn’t reached in this time at this pace.'**
+  String forecastNotReached(String goal);
+
+  /// No description provided for @forecastChartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight forecast: from {start} today to about {end} in {weeks} weeks'**
+  String forecastChartLabel(String start, int weeks, String end);
+
+  /// No description provided for @forecastPast.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded'**
+  String get forecastPast;
+
+  /// No description provided for @forecastToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get forecastToday;
+
+  /// No description provided for @forecastAhead.
+  ///
+  /// In en, this message translates to:
+  /// **'{weeks} weeks ahead'**
+  String forecastAhead(int weeks);
+
+  /// No description provided for @forecastFromDiary.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on what your food diary shows (about {kcal} kcal a day over the last 2 weeks) and your activity.'**
+  String forecastFromDiary(String kcal);
+
+  /// No description provided for @forecastFromTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on eating your target of {kcal} kcal a day with your current activity. Log your meals on most days to forecast from what you actually eat.'**
+  String forecastFromTarget(String kcal);
+
+  /// No description provided for @forecastFromMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on eating about {kcal} kcal a day with your current activity. Set a goal or log your meals for a more useful forecast.'**
+  String forecastFromMaintenance(String kcal);
+
+  /// No description provided for @forecastEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'A projection, not a promise: water, hormones and how your body adapts all move the scale.'**
+  String get forecastEstimate;
+
   /// No description provided for @bodyHistory.
   ///
   /// In en, this message translates to:

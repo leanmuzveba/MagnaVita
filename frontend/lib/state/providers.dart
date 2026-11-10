@@ -1415,6 +1415,43 @@ final calorieTargetProvider = FutureProvider<CalorieTarget?>((ref) async {
   return calorieTarget(energy: energy, sex: sex, currentKg: weighIns.last.weightKg, goal: goal);
 });
 
+/// Your weight over the next 12 weeks, eating what your diary shows (or your
+/// target, or maintenance) with your current activity; null without energy.
+final forecastProvider = FutureProvider<Forecast?>((ref) async {
+  final energy = await ref.watch(energyProvider.future);
+  if (energy == null) return null;
+  final profile = await ref.watch(bodyProfileProvider.future);
+  final weighIns = await ref.watch(weighInsProvider.future);
+  final goal = await ref.watch(weightGoalProvider.future);
+  final target = await ref.watch(calorieTargetProvider.future);
+  final now = ref.read(clockProvider)().toLocal();
+  final today = DateTime(now.year, now.month, now.day);
+  final entries = await ref
+      .watch(foodRepositoryProvider)
+      .between(DateTime(today.year, today.month, today.day - intakeWindowDays), DateTime(today.year, today.month, today.day - 1));
+  final perDay = <DateTime, double>{};
+  for (final e in entries) {
+    perDay[e.day] = (perDay[e.day] ?? 0) + (e.nutrients[Nutrient.energy] ?? 0);
+  }
+  final eaten = diaryIntake([for (final v in perDay.values) if (v > 0) v]);
+  final (intake, source) = eaten != null
+      ? (eaten, IntakeSource.diary)
+      : target != null
+      ? (target.kcal, IntakeSource.target)
+      : (energy.maintenance, IntakeSource.maintenance);
+  return forecast(
+    startKg: weighIns.last.weightKg,
+    heightCm: profile.heightCm!,
+    age: profile.ageOn(today)!,
+    sex: profile.sex!,
+    energy: energy,
+    intake: intake,
+    source: source,
+    today: today,
+    goal: goal,
+  );
+});
+
 /// Imports the last week's watch workouts into Activity (once each).
 /// Returns how many were new.
 final watchSyncProvider = FutureProvider<int>((ref) async {

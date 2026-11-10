@@ -103,6 +103,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('80 kg at 0.5 kg a week'), findsOneWidget);
     expect(find.text('Eat about 2,325 kcal a day to lose about 0.5 kg a week'), findsOneWidget);
+    expect(find.text('In 12 weeks: about 84.5 kg'), findsOneWidget);
+    expect(find.text('80 kg isn’t reached in this time at this pace.'), findsOneWidget);
+    expect(find.textContaining('Based on eating your target of 2,325 kcal a day'), findsOneWidget);
+    expect(find.bySemanticsLabel('Weight forecast: from 90 kg today to about 84.5 kg in 12 weeks'), findsOneWidget);
 
     // History: delete the weigh-in → back to "add your weight".
     await tester.tap(find.byTooltip(RegExp('^90 kg on ')));

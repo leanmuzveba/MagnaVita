@@ -57,6 +57,40 @@ void main() {
     expect(minGoalKg(180).toStringAsFixed(1), '59.9');
   });
 
+  test('forecast: resting energy follows the weight; holds at the goal', () {
+    const man = Energy(resting: 1855, maintenance: 2875, level: ActivityLevel.moderate, measured: false);
+    final today = DateTime(2026, 11, 10);
+    Forecast run(WeightGoal? goal) => forecast(
+      startKg: 90,
+      heightCm: 180,
+      age: 35,
+      sex: Sex.male,
+      energy: man,
+      intake: 2325,
+      source: IntakeSource.target,
+      today: today,
+      goal: goal,
+    );
+    final f = run(const WeightGoal(goalKg: 80));
+    expect(f.weeklyKg, hasLength(13));
+    expect(f.weeklyKg.first, 90);
+    expect(f.weeklyKg.last, closeTo(84.47, 0.01)); // a little slower than 0.5 kg a week
+    for (var i = 1; i < f.weeklyKg.length; i++) {
+      expect(f.weeklyKg[i], lessThan(f.weeklyKg[i - 1]));
+    }
+    expect(f.reachesGoal, isNull);
+    final near = run(const WeightGoal(goalKg: 88));
+    expect(near.reachesGoal, isNotNull);
+    expect(near.reachesGoal!.isAfter(today), isTrue);
+    expect(near.weeklyKg.last, 88);
+    expect(near.weeklyKg.where((w) => w < 88), isEmpty, reason: 'never projects past the goal');
+  });
+
+  test('diary intake needs 7 logged days', () {
+    expect(diaryIntake(List.filled(6, 2000)), isNull);
+    expect(diaryIntake([...List.filled(6, 2000), 2700]), 2100);
+  });
+
   test('past days: phone step totals since setup give a measured level', () async {
     final clock = FakeClock(DateTime(2026, 11, 10, 9));
     final db = await openTestDb();

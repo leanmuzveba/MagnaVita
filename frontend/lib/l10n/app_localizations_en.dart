@@ -2125,6 +2125,59 @@ class AppLocalizationsEn extends AppLocalizations {
       'An estimate. Bodies adapt, so check your weigh-ins every few weeks and adjust. If you’re pregnant, breastfeeding, have a medical condition or a history of disordered eating, talk to a healthcare professional first.';
 
   @override
+  String get forecastTitle => 'Weight forecast';
+
+  @override
+  String forecastIn(int weeks, String weight) {
+    return 'In $weeks weeks: about $weight';
+  }
+
+  @override
+  String forecastReach(String goal, String date) {
+    return 'Reaches $goal around $date';
+  }
+
+  @override
+  String forecastNotReached(String goal) {
+    return '$goal isn’t reached in this time at this pace.';
+  }
+
+  @override
+  String forecastChartLabel(String start, int weeks, String end) {
+    return 'Weight forecast: from $start today to about $end in $weeks weeks';
+  }
+
+  @override
+  String get forecastPast => 'Recorded';
+
+  @override
+  String get forecastToday => 'Today';
+
+  @override
+  String forecastAhead(int weeks) {
+    return '$weeks weeks ahead';
+  }
+
+  @override
+  String forecastFromDiary(String kcal) {
+    return 'Based on what your food diary shows (about $kcal kcal a day over the last 2 weeks) and your activity.';
+  }
+
+  @override
+  String forecastFromTarget(String kcal) {
+    return 'Based on eating your target of $kcal kcal a day with your current activity. Log your meals on most days to forecast from what you actually eat.';
+  }
+
+  @override
+  String forecastFromMaintenance(String kcal) {
+    return 'Based on eating about $kcal kcal a day with your current activity. Set a goal or log your meals for a more useful forecast.';
+  }
+
+  @override
+  String get forecastEstimate =>
+      'A projection, not a promise: water, hormones and how your body adapts all move the scale.';
+
+  @override
   String get bodyHistory => 'Weight history';
 
   @override

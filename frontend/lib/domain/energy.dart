@@ -177,3 +177,71 @@ CalorieTarget calorieTarget({required Energy energy, required Sex sex, required 
       );
   }
 }
+
+/// What you eat comes from the diary when at least [minIntakeDays] of the last
+/// [intakeWindowDays] days have food logged.
+const minIntakeDays = 7, intakeWindowDays = 14;
+
+/// Weeks the forecast looks ahead.
+const forecastWeeks = 12;
+
+enum IntakeSource { diary, target, maintenance }
+
+/// Projected weight: one point a week from now, and when the goal is reached.
+class Forecast {
+  const Forecast({required this.weeklyKg, required this.intake, required this.source, this.reachesGoal});
+
+  /// [0] is today's weight, then one value per week.
+  final List<double> weeklyKg;
+  final double intake;
+  final IntakeSource source;
+  final DateTime? reachesGoal;
+}
+
+/// Day-by-day projection eating [intake] kcal a day: resting energy is
+/// recalculated as weight changes, activity stays as it is now. Once the goal
+/// is reached the line holds there (you'd move to maintenance calories).
+Forecast forecast({
+  required double startKg,
+  required double heightCm,
+  required int age,
+  required Sex sex,
+  required Energy energy,
+  required double intake,
+  required IntakeSource source,
+  required DateTime today,
+  WeightGoal? goal,
+  int weeks = forecastWeeks,
+}) {
+  double burn(double w) {
+    final r = bmr(weightKg: w, heightCm: heightCm, age: age, sex: sex);
+    return energy.measured ? r * ActivityLevel.sedentary.factor + energy.activeKcal : r * energy.level.factor;
+  }
+
+  final direction = goal == null ? null : directionFor(startKg, goal.goalKg);
+  var w = startKg;
+  DateTime? reached;
+  final points = [startKg];
+  for (var day = 1; day <= weeks * 7; day++) {
+    if (reached == null) {
+      w -= (burn(w) - intake) / kcalPerKg;
+      final hit = switch (direction) {
+        WeightDirection.lose => w <= goal!.goalKg,
+        WeightDirection.gain => w >= goal!.goalKg,
+        _ => false,
+      };
+      if (hit) {
+        reached = DateTime(today.year, today.month, today.day + day);
+        w = goal!.goalKg;
+      }
+    }
+    if (day % 7 == 0) points.add(w);
+  }
+  return Forecast(weeklyKg: points, intake: intake, source: source, reachesGoal: reached);
+}
+
+/// Average calories a day from the diary (days with food logged), or null
+/// when fewer than [minIntakeDays] have any.
+double? diaryIntake(List<double> loggedDayTotals) => loggedDayTotals.length < minIntakeDays
+    ? null
+    : loggedDayTotals.reduce((a, b) => a + b) / loggedDayTotals.length;

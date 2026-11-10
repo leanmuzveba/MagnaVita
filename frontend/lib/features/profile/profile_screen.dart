@@ -141,6 +141,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         today: t,
                         weight: units.weight,
                         imperial: units.imperial,
+                        history: weighIns,
                       ),
                     ],
                     const SizedBox(height: 22),

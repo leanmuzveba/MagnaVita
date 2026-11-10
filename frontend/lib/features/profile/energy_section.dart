@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart' show NumberFormat;
+import 'dart:math' as math;
+
+import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
 import '../../core/l10n.dart';
 import '../../core/theme/app_theme.dart';
@@ -39,10 +41,12 @@ class EnergySection extends ConsumerWidget {
     required this.today,
     required this.weight,
     required this.imperial,
+    this.history = const [],
   });
 
   final BodyProfile profile;
   final WeighIn? latest;
+  final List<WeighIn> history;
   final DateTime today;
   final String Function(double kg) weight;
   final bool imperial;
@@ -65,7 +69,7 @@ class EnergySection extends ConsumerWidget {
             Text(l.energyKcalDay(formatKcal(resting)), style: AppText.title.copyWith(fontSize: 24)),
             const SizedBox(height: 4),
             Text(l.energyBmrSub, style: AppText.small.copyWith(fontSize: 12.5)),
-            const Divider(height: 28),
+            const Divider(height: 28, color: AppColors.divider),
             if (energy != null) ...[
               MonoLabel(l.energyMaintain),
               const SizedBox(height: 6),
@@ -105,7 +109,7 @@ class EnergySection extends ConsumerWidget {
               ),
             ],
             if (latest != null && profile.heightCm != null) ...[
-              const Divider(height: 28),
+              const Divider(height: 28, color: AppColors.divider),
               _GoalPart(
                 current: latest!.weightKg,
                 heightCm: profile.heightCm!,
@@ -114,11 +118,156 @@ class EnergySection extends ConsumerWidget {
                 imperial: imperial,
               ),
             ],
+            if (energy != null && latest != null) ...[
+              const Divider(height: 28, color: AppColors.divider),
+              _ForecastPart(history: history, weight: weight, today: today),
+            ],
           ],
         ],
       ),
     );
   }
+}
+
+/// Recorded weigh-ins, then a dashed 12-week projection, with the goal line.
+class _ForecastPart extends ConsumerWidget {
+  const _ForecastPart({required this.history, required this.weight, required this.today});
+
+  final List<WeighIn> history;
+  final String Function(double kg) weight;
+  final DateTime today;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final f = ref.watch(forecastProvider).value;
+    final goal = ref.watch(weightGoalProvider).value;
+    if (f == null) return const SizedBox.shrink();
+    final end = f.weeklyKg.last;
+    final small = AppText.small.copyWith(fontSize: 12.5);
+    final reach = switch (f.reachesGoal) {
+      final d? => l.forecastReach(weight(goal!.goalKg), DateFormat('d MMM y').format(d)),
+      null when goal != null && directionFor(f.weeklyKg.first, goal.goalKg) != WeightDirection.maintain =>
+        l.forecastNotReached(weight(goal.goalKg)),
+      _ => null,
+    };
+    final start = DateTime(today.year, today.month, today.day - forecastWeeks * 7);
+    final past = [
+      for (final w in history)
+        if (!w.at.toLocal().isBefore(start)) (w.at.toLocal().difference(today).inHours / 24.0, w.weightKg),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MonoLabel(l.forecastTitle),
+        const SizedBox(height: 6),
+        Text(l.forecastIn(forecastWeeks, weight(end)), style: AppText.title.copyWith(fontSize: 20)),
+        if (reach != null) ...[const SizedBox(height: 2), Text(reach, style: AppText.body)],
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 150,
+          child: Semantics(
+            container: true,
+            image: true,
+            label: l.forecastChartLabel(weight(f.weeklyKg.first), forecastWeeks, weight(end)),
+            child: CustomPaint(
+              size: Size.infinite,
+              painter: _ForecastChart(
+                past: past,
+                future: [for (var i = 0; i < f.weeklyKg.length; i++) (i * 7.0, f.weeklyKg[i])],
+                goalKg: goal?.goalKg,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        ExcludeSemantics(
+          child: Row(
+            children: [
+              Text(l.forecastPast, style: small),
+              const Spacer(),
+              Text(l.forecastToday, style: small.copyWith(fontWeight: FontWeight.w700)),
+              const Spacer(),
+              Text(l.forecastAhead(forecastWeeks), style: small),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(switch (f.source) {
+          IntakeSource.diary => l.forecastFromDiary(formatKcal(f.intake)),
+          IntakeSource.target => l.forecastFromTarget(formatKcal(f.intake)),
+          IntakeSource.maintenance => l.forecastFromMaintenance(formatKcal(f.intake)),
+        }, style: small),
+        const SizedBox(height: 4),
+        Text(l.forecastEstimate, style: small),
+      ],
+    );
+  }
+}
+
+/// x = days from today (negative = past), y = kg.
+class _ForecastChart extends CustomPainter {
+  _ForecastChart({required this.past, required this.future, this.goalKg});
+  final List<(double, double)> past;
+  final List<(double, double)> future;
+  final double? goalKg;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final all = [...past, ...future].map((p) => p.$2).toList();
+    if (goalKg != null) all.add(goalKg!);
+    final lo = all.reduce(math.min), hi = all.reduce(math.max);
+    final span = math.max(hi - lo, 1.0);
+    final minX = -forecastWeeks * 7.0, maxX = forecastWeeks * 7.0;
+    Offset at((double, double) p) => Offset(
+      (p.$1 - minX) / (maxX - minX) * size.width,
+      size.height - 8 - (p.$2 - lo) / span * (size.height - 16),
+    );
+    final stroke = Paint()
+      ..color = AppColors.primary
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    // Today.
+    final x0 = at((0, lo)).dx;
+    canvas.drawLine(Offset(x0, 0), Offset(x0, size.height), Paint()..color = AppColors.textSecondary.withValues(alpha: .25));
+
+    // Goal: a thin dashed line.
+    if (goalKg != null) {
+      final y = at((0, goalKg!)).dy;
+      final dash = Paint()
+        ..color = AppColors.textSecondary
+        ..strokeWidth = 1.5;
+      for (var x = 0.0; x < size.width; x += 10) {
+        canvas.drawLine(Offset(x, y), Offset(math.min(x + 5, size.width), y), dash);
+      }
+    }
+
+    // Recorded: solid line with dots.
+    if (past.isNotEmpty) {
+      final path = Path()..moveTo(at(past.first).dx, at(past.first).dy);
+      for (final p in past.skip(1)) {
+        path.lineTo(at(p).dx, at(p).dy);
+      }
+      canvas.drawPath(path, stroke);
+      for (final p in past) {
+        canvas.drawCircle(at(p), 3, Paint()..color = AppColors.primary);
+      }
+    }
+
+    // Projected: dashed.
+    for (var i = 1; i < future.length; i++) {
+      final a = at(future[i - 1]), b = at(future[i]);
+      final mid = Offset.lerp(a, b, .6)!;
+      canvas.drawLine(a, mid, stroke..strokeWidth = 2.5);
+    }
+    canvas.drawCircle(at(future.last), 4, Paint()..color = AppColors.primaryMid);
+  }
+
+  @override
+  bool shouldRepaint(_ForecastChart old) => old.past != past || old.future != future || old.goalKg != goalKg;
 }
 
 /// Goal weight and the daily calories for it, with the safety limits shown.
