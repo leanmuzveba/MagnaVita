@@ -18,8 +18,8 @@
 | **TheMealDB** | Secondary | Recipe catalogue |
 | **Open Food Facts** | Secondary | Barcode product data |
 | **Release page** | Secondary | Publishes the newest APK and `version.json` |
-| **Supabase** | Secondary | Holds accounts (email/password, Google) and each user's profile and goals row |
-| **Google** | Secondary | Confirms who the user is for "Continue with Google" |
+| **Supabase** | Secondary | Holds accounts (email and password) and each user's profile and goals row |
+| **Brevo** | Secondary | Delivers the code emails for confirming an account and resetting a password |
 
 ## 2. Use case overview
 
@@ -51,8 +51,8 @@
 | UC-24 | Back up and restore data | User, Phone OS | FR-114 |
 | UC-25 | Delete all data | User | FR-115 |
 | UC-26 | Update the app | User, Release page | FR-26 |
-| UC-27 | Create an account | User, Supabase | FR-04–06 |
-| UC-28 | Sign in (email or Google) | User, Supabase, Google | FR-04–05, FR-09 |
+| UC-27 | Create an account and confirm it with an emailed code | User, Supabase, Brevo | FR-04–06 |
+| UC-28 | Sign in, or reset a forgotten password | User, Supabase, Brevo | FR-04–06, FR-09 |
 | UC-29 | Continue without an account | User | FR-04 |
 | UC-30 | Answer the setup questions | User, Supabase | FR-07–09 |
 | UC-31 | See resting energy and maintenance calories | User | FR-107–108, FR-109b |
@@ -226,20 +226,21 @@
 - **Main flow:** on launch the app reads `version.json`; if newer, Home shows "New version available · Update" → the user taps Update → the release page opens → the user installs the APK over the old one and keeps all data.
 - **Alternative:** offline → no banner, nothing else affected.
 
-### UC-27 Create an account
+### UC-27 Create an account and confirm it with an emailed code
 - **Precondition:** adult, account step showing (after the age check, or Profile → Account → Sign in or create an account).
 - **Main flow:**
   1. The user enters name, email and a password of 8+ characters and taps Create account.
-  2. Supabase creates the account; a profile row is created with the name.
-  3. The user is signed in; their name is used in the app if none was set; the setup questions follow (UC-30).
-- **Alternatives:** 1a fields missing or invalid → each one says what's wrong; 2a email confirmation is on → "we sent a link to …", the screen switches to Sign in; 2b the email already has an account → "sign in instead"; 2c weak password → asked for a longer one.
+  2. Supabase creates the account (and a profile row with the name) and Brevo emails a 6-digit code.
+  3. "Check your email": the user types the code and taps Confirm.
+  4. The user is signed in; their name is used in the app if none was set; the setup questions follow (UC-30).
+- **Alternatives:** 1a fields missing or invalid → each one says what's wrong; 2a the email already has an account → "sign in instead"; 2b weak password → asked for a longer one; 3a wrong or expired code → said so, try again; 3b no email → "Send a new code" and a hint to check spam; 3c too many emails → wait a minute.
 - **Exception:** offline → "You're offline", nothing created.
 
-### UC-28 Sign in (email or Google)
-- **Main flow (email):** Already have an account? Sign in → email and password → Sign in.
-- **Main flow (Google):** Continue with Google → choose a Google account → signed in.
+### UC-28 Sign in, or reset a forgotten password
+- **Main flow (sign in):** Already have an account? Sign in → email and password → Sign in.
+- **Main flow (forgot password):** Forgot your password? → email → Send code → enter the emailed code and a new password (8+ characters) → Save and sign in.
 - **Then:** if the account already holds a finished setup (e.g. a new phone), it is copied to the phone (name, body details, latest weight if the phone has none, goal weight and pace, activity level, setup answers, diet, allergies, units) and the setup questions are skipped; otherwise this phone's profile is saved to the account.
-- **Alternatives:** wrong password → "That email and password don't match"; email not confirmed → asked to confirm first; Google cancelled → "Sign-in was cancelled"; Google not configured → "use your email for now".
+- **Alternatives:** wrong password → "That email and password don't match"; account not confirmed yet → a new code is sent and the code screen opens (UC-27 step 3); wrong or expired reset code → said so, send a new one.
 
 ### UC-29 Continue without an account
 - **Main flow:** on the account step the user taps Continue without an account → setup questions (UC-30) → the app. Everything stays on the phone.

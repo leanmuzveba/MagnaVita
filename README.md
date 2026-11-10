@@ -7,7 +7,7 @@ A calm, offline-first personal wellness app for Android (iOS project included), 
 ## Features
 
 ### Getting started in the app
-- **Account**: after the age check, create an account (name, email, password), sign in, use **Continue with Google**, or carry on without an account. Only your profile and goals are saved to the account, so signing in on a new phone brings them back
+- **Account**: after the age check, create an account (name, email, password) and confirm it with the code emailed to you, sign in, reset a forgotten password with an emailed code, or carry on without an account. Only your profile and goals are saved to the account, so signing in on a new phone brings them back
 - **Setup questions**: seven short, skippable steps: about you, weight today, main goal (lose weight, stay where I am, build muscle, get fitter, better fasting habits) with goal weight and pace, activity level, meals a day, training, and food preferences. Existing installs see it once, filled in with what's already saved
 
 ### Home
@@ -85,7 +85,7 @@ MagnaVita/
 | Notifications | `flutter_local_notifications` |
 | Health | `health` (Health Connect), `pedometer` |
 | Device | `mobile_scanner`, `image_picker`, `file_picker`, `share_plus` |
-| Accounts | Supabase Auth + `profiles` table with Row Level Security; Google Sign-In |
+| Accounts | Supabase Auth (email + password, codes by email) + `profiles` table with Row Level Security; emails sent through Brevo SMTP |
 | Online (optional) | TheMealDB, Open Food Facts, Google Gemini, free-exercise-db photos |
 
 ## Brand
@@ -106,9 +106,7 @@ Photo estimates, grocery photos and AI recipes need a Gemini API key, entered on
 
 ### Accounts (Supabase)
 
-1. In the Supabase project, open **SQL Editor** and run `backend/supabase/schema.sql` once.
-2. The project URL and publishable key are in `frontend/lib/core/config.dart` (both are public by design; never put the service-role key in the app).
-3. For **Continue with Google**: create a Web and an Android OAuth client in Google Cloud (Android: package `com.leanmuzveba.life_fasting` plus the signing key's SHA-1), turn on the Google provider in Supabase with the Web client's ID and secret, and put the Web client ID in `googleWebClientId` in `config.dart`.
+The project URL and publishable key are in `frontend/lib/core/config.dart` (both are public by design; never put the service-role key, SMTP key or a Brevo API key in the app). The one-time dashboard setup (database, Brevo SMTP, code email templates) is in [backend/README.md](backend/README.md).
 
 ## Releasing
 

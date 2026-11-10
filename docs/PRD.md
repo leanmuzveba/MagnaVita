@@ -13,7 +13,7 @@ This document describes MagnaVita as it is implemented today. Requirements carri
 
 ## 1. Overview
 
-MagnaVita is a calm, offline-first personal wellness app. It started as the Fasting Companion (a circular fasting timer with milestone markers), was expanded under the name RUVA into a nutrition, kitchen and activity hub, and was renamed MagnaVita in October 2026. The circular fasting timer remains the signature component; food, kitchen, recipes, workouts, activity, steps, water and body measurements are organised around it. Since November 2026 people can create an account (email or Google), answer a few setup questions about themselves and their goal, and get personal calorie targets and a weight forecast.
+MagnaVita is a calm, offline-first personal wellness app. It started as the Fasting Companion (a circular fasting timer with milestone markers), was expanded under the name RUVA into a nutrition, kitchen and activity hub, and was renamed MagnaVita in October 2026. The circular fasting timer remains the signature component; food, kitchen, recipes, workouts, activity, steps, water and body measurements are organised around it. Since November 2026 people can create an account (email, confirmed with a code), answer a few setup questions about themselves and their goal, and get personal calorie targets and a weight forecast.
 
 ### Vision
 
@@ -66,9 +66,9 @@ Priority: **M** = must, **S** = should, **C** = could. Status: ✅ implemented, 
 | FR-01 | Welcome screens explain the app's purpose, limits and privacy | M | ✅ |
 | FR-02 | Age check; under-18s see an educational screen and no fasting controls | M | ✅ |
 | FR-03 | Splash with the MagnaVita logo while data loads | C | ✅ |
-| FR-04 | After the age check, adults create an account (name, email, password), sign in, continue with Google, or continue without an account | M | ✅ (Google needs its client ID configured) |
+| FR-04 | After the age check, adults create an account (name, email, password), sign in, or continue without an account | M | ✅ |
 | FR-05 | Sign-up validates name, email and an 8+ character password; explains wrong password, existing email, weak password, unconfirmed email and offline | M | ✅ |
-| FR-06 | When email confirmation is on, sign-up says to confirm by email, then sign in | S | ✅ |
+| FR-06 | New accounts are confirmed with a 6-digit code emailed to the inbox (send a new code; signing in before confirming asks for the code); a forgotten password is reset with an emailed code and a new password | M | ✅ |
 | FR-07 | Setup questions (7 short steps, each optional and skippable): name, sex, birth year, height, units; current weight; main goal (lose weight, stay where I am, build muscle, get fitter, better fasting habits) with goal weight and pace; activity level; meals a day; training days, experience and equipment; diet and allergies | M | ✅ |
 | FR-08 | Existing installs see the setup once, filled in from what's already saved | S | ✅ |
 | FR-09 | Signed in, profile and goals are saved to the account; signing in on a new phone brings them back and skips setup | S | ✅ |
@@ -249,8 +249,8 @@ Priority: **M** = must, **S** = should, **C** = could. Status: ✅ implemented, 
 | Open Food Facts | Barcode lookup | Online, optional |
 | Google Gemini | Meal photo, grocery photo, recipe drafts | Optional, user's own key |
 | Health Connect | Steps, calories, watch workouts | Optional, read-only |
-| Supabase | Accounts (email/password, Google) and the profile/goals row | Optional |
-| Google Sign-In | "Continue with Google" | Optional |
+| Supabase | Accounts (email and password, codes by email) and the profile/goals row | Optional |
+| Brevo | Sends the code emails (Supabase custom SMTP) | With accounts |
 | Vercel (ruva-releases) | APK download and `version.json` update check | Optional |
 
 ## 8. Out of scope
@@ -277,12 +277,11 @@ Priority: **M** = must, **S** = should, **C** = could. Status: ✅ implemented, 
 | Fasting Companion v1.0 | Ring, milestones, history, calendar, reminders, age gate |
 | RUVA v1.2 | Green brand, Today dashboard, water, activity, kitchen, monthly review, food diary, recipes, body measurements, exports, watch steps, in-app updates |
 | MagnaVita (Oct 2026) | Rename and new logo, backup and restore, swims, strength workouts, exercise library, workout planner, progress, scheduling, editable steps |
-| MagnaVita (Nov 2026) | Accounts (email, Google), setup questions, goal-shaped Activity page, resting energy, maintenance calories from records, calorie calculator, weight forecast, calorie target on Home and per-meal guides |
+| MagnaVita (Nov 2026) | Accounts (email with codes, password reset), setup questions, goal-shaped Activity page, resting energy, maintenance calories from records, calorie calculator, weight forecast, calorie target on Home and per-meal guides |
 
 ## 11. Future considerations
 
 - Estimated cost of missing recipe ingredients (FR-69)
-- Password reset from the app
 - Optional cloud sync of day-to-day records
 - More languages (structure is ready)
 - iOS release and Apple Health
@@ -299,5 +298,5 @@ Priority: **M** = must, **S** = should, **C** = could. Status: ✅ implemented, 
 | No weight or measurements in the MVP (v1.0) | Optional weigh-ins and measurements with opt-out and age safeguards (as allowed by v1.2 §7) |
 | AI recipes later (v1.2) | Gemini recipe drafts added, always reviewed by the user before saving |
 | Circles / social (v1.2 roadmap) | Not built: the app is for personal use |
-| No accounts (v2.0) | Optional accounts (email or Google) holding only the profile and goals; the app still works fully without one |
+| No accounts (v2.0) | Optional email accounts holding only the profile and goals; the app still works fully without one. Google sign-in was considered and left out |
 | "No restrictive calorie targets or weight-loss plans" (v2.0) | Weight-loss targets for adults only, with the safety limits in §2 |

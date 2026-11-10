@@ -34,7 +34,6 @@ This document describes how MagnaVita is built: architecture, data, integrations
 | `file_picker`, `share_plus` | Backup restore and sharing (backups, PNG exports) |
 | `url_launcher` | Opening the update page and Health Connect store page |
 | `supabase_flutter` | Accounts (Supabase Auth) and the `profiles` table |
-| `google_sign_in` 7 | "Continue with Google" (ID token passed to Supabase) |
 | `flutter_svg`, `intl`, `flutter_localizations` | Icons, formatting, localisation |
 | Dev: `sqflite_common_ffi`, `flutter_launcher_icons`, `flutter_native_splash` | Desktop DB in tests, icon and splash generation |
 
@@ -54,7 +53,7 @@ domain/  (pure Dart models and calculations; no Flutter imports)
 
 | Layer | Folder | Responsibilities |
 |---|---|---|
-| Core | `lib/core/` | Theme and design tokens, fonts, icons, formatting, shared widgets (`ruva_kit.dart`, pill buttons, sheets, logo), `config.dart` (Supabase URL, publishable key, Google web client ID) |
+| Core | `lib/core/` | Theme and design tokens, fonts, icons, formatting, shared widgets (`ruva_kit.dart`, pill buttons, sheets, logo), `config.dart` (Supabase URL and publishable key) |
 | Domain | `lib/domain/` | Fasting timer maths, milestones, food and nutrients, kitchen, recipes and matching, activity and MET, swims, steps merging, workouts, plan builder, body/BMI, `energy.dart` (BMR, activity level, calorie target, forecast), `goals.dart` (setup answers, meal split), history aggregation, settings |
 | Data | `lib/data/` | `AppDatabase` and migrations, one repository per area, backup, Health Connect, pedometer, notifications, Gemini, TheMealDB, Open Food Facts, update checker, `account.dart` (`AccountService` over Supabase + Google) |
 | State | `lib/state/providers.dart` | Providers wiring repositories to UI; injectable clock (`clockProvider`, `nowProvider`) so time-based logic is testable |
@@ -132,7 +131,7 @@ domain/  (pure Dart models and calculations; no Flutter imports)
 |---|---|
 | `public.profiles` | One row per user (`id` = `auth.users.id`, cascade delete): display name, sex, birth year, height, latest weight, main goal, goal weight, pace, activity level, meals a day, training days, experience, equipment, diet, allergies, units, `setup_done`, timestamps; CHECK constraints on ranges |
 | RLS policies | `select`, `insert`, `update` only where `auth.uid() = id`, for the `authenticated` role; no access for `anon` |
-| `handle_new_user()` trigger | Creates the profile row on sign-up with the name from sign-up (`name`) or Google (`full_name`) |
+| `handle_new_user()` trigger | Creates the profile row on sign-up with the name given at sign-up (`name` in user metadata) |
 | `touch_updated_at()` trigger | Keeps `updated_at` current |
 | `delete_my_account()` | `security definer` RPC callable by `authenticated` only; deletes the caller from `auth.users` (profile cascades) |
 
@@ -172,8 +171,8 @@ Diary, kitchen, workouts, weigh-in history and fasting sessions are never sent t
 | Health Connect | `health` package, read-only: steps, active and total calories, exercise, distance. Mi Fitness preferred, otherwise the app with the most data; per-app totals so steps aren't double counted | Status shown (not installed, needs permission, connected); app works without it |
 | Phone pedometer | `pedometer` stream folded into a daily step book | "Count my steps" permission prompt; unavailable message if no sensor |
 | Release page | `version.json` on https://ruva-releases.vercel.app compared with the build number passed by `--dart-define` | Silent when offline or unconfigured |
-| Supabase Auth | `Supabase.initialize` in `main` with the project URL and publishable key; email/password sign-up (name in user metadata) and sign-in; session kept on the device | Errors mapped to clear messages (wrong password, email taken, weak password, unconfirmed, offline); the app works without an account |
-| Google Sign-In | `GoogleSignIn.instance.initialize(serverClientId: web client ID)` → `authenticate()` → ID token (+ access token) → `signInWithIdToken`. Needs a Web OAuth client (also set in Supabase's Google provider) and an Android OAuth client with the package name and signing SHA-1 | Without a client ID the button explains Google isn't available yet |
+| Supabase Auth | `Supabase.initialize` in `main` with the project URL and publishable key. Sign-up: `signUp` (name in user metadata) → "Confirm email" sends a code → `verifyOTP(type: signup)` signs in; `resend(type: signup)` for a new code. Sign-in: `signInWithPassword`; `email_not_confirmed` sends a new code and asks for it. Forgot password: `resetPasswordForEmail` → `verifyOTP(type: recovery)` → `updateUser(password)`. Session kept on the device | Errors mapped to clear messages (wrong password, email taken, weak password, unconfirmed, wrong/expired code, too many emails, offline); the app works without an account |
+| Brevo (SMTP) | Supabase custom SMTP (`smtp-relay.brevo.com:587`, Brevo SMTP login + SMTP key) sends the confirm and reset emails; templates in `backend/supabase/email-templates/` show `{{ .Token }}` | Without it Supabase's built-in sender is limited to a few emails an hour |
 
 ### Android permissions
 
@@ -247,7 +246,7 @@ The product name is MagnaVita and the GitHub repository is `leanmuzveba/MagnaVit
 | Database `life_fasting.db` | Existing data location |
 | Internal `Ruva*` widget names, `ruva_kit.dart` | Code-only; renaming adds churn without user benefit |
 | `ruva-releases.vercel.app` | Installed apps check this URL for updates |
-| Release builds signed with this PC's debug key | Google sign-in's Android client is registered with that key's SHA-1 (`9E:93:BB:…:64:32`); a build signed elsewhere needs its SHA-1 added |
+| Release builds signed with this PC's debug key | Installed copies only accept updates signed with the same key |
 
 ## 12. Known limitations
 
@@ -256,5 +255,4 @@ The product name is MagnaVita and the GitHub repository is `leanmuzveba/MagnaVit
 - Health Connect integration is Android-only; Apple Health is not implemented.
 - English only, though all strings are ready for translation.
 - No estimated cost for missing recipe ingredients.
-- No password reset in the app yet (Supabase's reset email needs a redirect page).
 - Only the profile and goals sync to the account; other records move between phones with a backup file.
