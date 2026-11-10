@@ -6,8 +6,12 @@ A calm, offline-first personal wellness app for Android (iOS project included), 
 
 ## Features
 
+### Getting started in the app
+- **Account**: after the age check, create an account (name, email, password), sign in, use **Continue with Google**, or carry on without an account. Only your profile and goals are saved to the account, so signing in on a new phone brings them back
+- **Setup questions**: seven short, skippable steps: about you, weight today, main goal (lose weight, stay where I am, build muscle, get fitter, better fasting habits) with goal weight and pace, activity level, meals a day, training, and food preferences. Existing installs see it once, filled in with what's already saved
+
 ### Home
-- **Today dashboard**: forest hero card with a compact fasting ring and Start/End, plus tiles for steps, calories eaten, calories burned and water
+- **Today dashboard**: forest hero card with a compact fasting ring and Start/End, plus tiles for steps, calories eaten (against your daily target), calories burned and water
 - **Day export**: any day's steps, distance, calories and active time as a transparent PNG in four styles (white, lime, forest, badge) with the MagnaVita wordmark
 - **In-app updates**: a "New version available" banner when a newer release is published
 
@@ -24,11 +28,12 @@ A calm, offline-first personal wellness app for Android (iOS project included), 
 - **Recipes**: TheMealDB recipes matched to your kitchen, showing available and missing ingredients, with allergy and diet filters, expiring-first suggestions, batch size, substitutions, shopping list, mark as cooked and log to diary. Write your own recipes or let Gemini draft one from a photo or description
 
 ### Activity
+- **Goal card**: the page is arranged around your goal: calories eaten vs your target for losing or keeping weight; workouts this week, streak and protein for building muscle; active minutes toward 150 a week for getting fitter
 - **Activity log**: walk, run, cycle, swim, strength, yoga and other, with optional intensity, notes and a calorie estimate from MET values and your weight
 - **Swims**: pool length and laps, with time worked out from your pace per lap and calories from your own resting energy
 - **Strength workouts**: track each set's weight and reps from an 870-exercise library, with a rest timer (and a notification when rest is over). Each exercise starts from what you did last time
 - **Exercise library**: photos, steps and muscles for each exercise, plus your heaviest set and best estimated 1-rep max
-- **Workout planner**: pick a goal, 3–5 days a week, experience level and equipment; each day works different muscles, and starting a day fills in the workout
+- **Workout planner**: pick a goal, 3–5 days a week, experience level and equipment (filled in from your setup answers); each day works different muscles, and starting a day fills in the workout
 - **Scheduling**: choose the weekdays you train, see this week at a glance, and get an optional reminder on training days
 - **Progress**: workouts per week, week streak, personal bests and a 1-rep max chart per exercise
 - **Steps and watch**: phone pedometer plus Health Connect (Mi Fitness first). The higher count wins, you can edit today's steps to match your watch, and watch workouts are imported into your history
@@ -36,11 +41,15 @@ A calm, offline-first personal wellness app for Android (iOS project included), 
 
 ### Profile
 - Name, height, sex and birth year (all optional); weigh-ins with a chart, tape measurements, BMI with its caveats and an estimated body-fat %. Weight tracking can be switched off, and under-18s get no adult classifications
+- **Energy**: resting energy (BMR), calories to keep your weight steady, and how active you are, worked out from 28 days of activities, watch calories and steps (or the level you pick)
+- **Calorie calculator**: a goal weight and pace give a daily calorie target. Adults only, never below your resting energy or 1,200 (women) / 1,500 (men) kcal, no goal below BMI 18.5, gaining capped at 0.5 kg a week
+- **Weight forecast**: your weigh-ins plus a 12-week projection from what your diary shows (or your target) and your activity, with the date you'd reach your goal
+- **Account**: sign in later, sign out, or delete your account
 - **History**: fasting sessions in a list and calendar, plus food, activity, water and measurement history in one place
 - **Settings**: target, 24-hour clock, units, diet and allergies, reminders (target reached, daily, water, monthly review, training days), watch connection and Gemini key
 
 ### Privacy and backup
-- All data stays on the phone in SQLite. Nothing is sent anywhere except a meal or grocery photo you choose to send to Gemini, and recipe/barcode lookups
+- Day-to-day records (diary, kitchen, workouts, weigh-ins, fasting) stay on the phone in SQLite. With an account, only your profile and goals are stored in Supabase, protected so only you can read them. Otherwise nothing is sent anywhere except a meal or grocery photo you choose to send to Gemini, and recipe/barcode lookups
 - **Settings → Back up my data** shares a backup file (without your Gemini key) to save in Drive, email or Files. **Restore from a backup** brings it back on a new phone. You can also delete everything
 
 ## Documentation
@@ -62,7 +71,7 @@ MagnaVita/
 │   ├── assets/           fonts, brand art, USDA foods, exercise library
 │   ├── tool/release.py   builds the APK and publishes it
 │   └── release_site/     generated download page (deployed, not hand-edited)
-├── backend/    Unused; the app needs no server (see backend/README.md)
+├── backend/    supabase/schema.sql: the account database (run once in Supabase)
 └── docs/       PRD, TRD, use cases, audit, historical PRDs, brand assets
 ```
 
@@ -76,6 +85,7 @@ MagnaVita/
 | Notifications | `flutter_local_notifications` |
 | Health | `health` (Health Connect), `pedometer` |
 | Device | `mobile_scanner`, `image_picker`, `file_picker`, `share_plus` |
+| Accounts | Supabase Auth + `profiles` table with Row Level Security; Google Sign-In |
 | Online (optional) | TheMealDB, Open Food Facts, Google Gemini, free-exercise-db photos |
 
 ## Brand
@@ -94,6 +104,12 @@ flutter test
 
 Photo estimates, grocery photos and AI recipes need a Gemini API key, entered on the phone in **Settings → Meal photo estimates**. Release builds never include a key.
 
+### Accounts (Supabase)
+
+1. In the Supabase project, open **SQL Editor** and run `backend/supabase/schema.sql` once.
+2. The project URL and publishable key are in `frontend/lib/core/config.dart` (both are public by design; never put the service-role key in the app).
+3. For **Continue with Google**: create a Web and an Android OAuth client in Google Cloud (Android: package `com.leanmuzveba.life_fasting` plus the signing key's SHA-1), turn on the Google provider in Supabase with the Web client's ID and secret, and put the Web client ID in `googleWebClientId` in `config.dart`.
+
 ## Releasing
 
 Commit first, then from `frontend/`:
@@ -109,7 +125,9 @@ This builds an arm64 APK (build number = git commit count, version name `1.2.NNN
 
 - Saved timestamps are the source of truth for the timer, never the displayed counter
 - Neutral copy: no fasting streaks, no guilt, and you can end a fast at any time
+- Weight-loss targets for adults only, with safety limits; weight loss is a choice, never the default
 - Estimates are labelled as estimates. Charts only show recorded data
 - AI output is always reviewed by you before it is saved
 - Package id `com.leanmuzveba.life_fasting`, the database name and internal code names (`Ruva*`) stay unchanged so existing data and releases keep working
+- The app works fully without an account
 - Accessible: WCAG AA contrast, screen-reader labels, scalable text, and state is never shown by colour alone
