@@ -14,6 +14,7 @@ import '../../domain/settings.dart';
 import '../../state/providers.dart';
 import '../food/food_labels.dart' show formatNutrient;
 import '../settings/settings_screen.dart' show ProfileNameSheet;
+import 'energy_section.dart';
 
 /// Formats weights/heights in the user's units.
 class _Units {
@@ -132,6 +133,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Text(l.bodyTrackOff, textAlign: TextAlign.center, style: AppText.small)
                   else ...[
                     _Numbers(profile: profile, latest: latest, age: age, adult: adult, units: units),
+                    if (adult) ...[
+                      const SizedBox(height: 12),
+                      EnergySection(profile: profile, latest: latest, today: t),
+                    ],
                     const SizedBox(height: 22),
                     Row(
                       children: [

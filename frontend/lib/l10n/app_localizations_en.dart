@@ -1994,6 +1994,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'BMI compares weight with height. It’s a quick screening number, not a diagnosis: it can’t tell muscle from fat, and it reads differently for athletes, older adults, pregnancy and some ethnic groups. Body-fat estimates can be several percent off. Treat these numbers as one signal among many — MagnaVita won’t set diets or calorie targets from them, and a healthcare professional can help you interpret them.';
 
   @override
+  String get energyBmr => 'Resting energy (BMR)';
+
+  @override
+  String energyKcalDay(String kcal) {
+    return '$kcal kcal a day';
+  }
+
+  @override
+  String get energyBmrSub =>
+      'What your body uses at rest — breathing, heartbeat, staying warm. Estimated from your weight, height, age and sex (Mifflin-St Jeor, about ±10%).';
+
+  @override
+  String get energyNeeds => 'Add your height, weight, age and sex to see your resting energy.';
+
+  @override
   String get bodyHistory => 'Weight history';
 
   @override

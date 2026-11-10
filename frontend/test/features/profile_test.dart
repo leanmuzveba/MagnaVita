@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:life_fasting/domain/body.dart';
+import 'package:life_fasting/domain/energy.dart';
 import 'package:life_fasting/state/providers.dart';
 
 import '../widget_test.dart' show pumpApp;
@@ -32,6 +33,15 @@ void main() {
     expect(toHealthyRange(70, 180), 0);
   });
 
+  test('resting energy: adults with every detail only', () {
+    final today = DateTime(2026, 10, 4);
+    const p = BodyProfile(heightCm: 165, birthYear: 1996, sex: Sex.female);
+    expect(restingEnergy(p, 60, today)!.round(), 1320); // 600 + 1031.25 − 150 − 161
+    expect(restingEnergy(p, null, today), isNull);
+    expect(restingEnergy(const BodyProfile(heightCm: 165, birthYear: 1996), 60, today), isNull);
+    expect(restingEnergy(const BodyProfile(heightCm: 165, birthYear: 2011, sex: Sex.female), 50, today), isNull);
+  });
+
   test('body fat: tape method preferred, BMI fallback, adults with sex only', () {
     final tape = bodyFat(sex: Sex.male, age: 30, heightCm: 178, latest: _w(80, waist: 90, neck: 38))!;
     expect(tape.method, BodyFatMethod.tape);
@@ -51,6 +61,7 @@ void main() {
   testWidgets('profile: enter stats → BMI, distance to range, body fat; history editable', (tester) async {
     await _openProfile(tester);
     expect(find.text('Add your height and weight to see your BMI and healthy weight range.'), findsOneWidget);
+    expect(find.text('Add your height, weight, age and sex to see your resting energy.'), findsOneWidget);
 
     await tester.tap(find.text('Update stats'));
     await tester.pumpAndSettle();
@@ -71,6 +82,8 @@ void main() {
     expect(find.text('To reach it: lose about 9.3 kg'), findsOneWidget);
     expect(find.text('From your tape measurements (US Navy method) · about ±3%'), findsOneWidget);
     expect(find.bySemanticsLabel('Age: 35 years'), findsOneWidget);
+    // BMR = 10·90 + 6.25·180 − 5·35 + 5
+    expect(find.text('1,855 kcal a day'), findsOneWidget);
 
     // History: delete the weigh-in → back to "add your weight".
     await tester.tap(find.byTooltip(RegExp('^90 kg on ')));
@@ -89,6 +102,7 @@ void main() {
     expect(find.text('18.4'), findsOneWidget);
     expect(find.textContaining('don’t apply under 18'), findsOneWidget);
     expect(find.textContaining('To reach it'), findsNothing);
+    expect(find.text('Resting energy (BMR)'), findsNothing);
     expect(find.text('Below the healthy range'), findsNothing);
   });
 

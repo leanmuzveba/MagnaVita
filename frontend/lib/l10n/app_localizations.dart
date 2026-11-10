@@ -3517,6 +3517,30 @@ abstract class AppLocalizations {
   /// **'BMI compares weight with height. It’s a quick screening number, not a diagnosis: it can’t tell muscle from fat, and it reads differently for athletes, older adults, pregnancy and some ethnic groups. Body-fat estimates can be several percent off. Treat these numbers as one signal among many — MagnaVita won’t set diets or calorie targets from them, and a healthcare professional can help you interpret them.'**
   String get bodyAboutBmiBody;
 
+  /// No description provided for @energyBmr.
+  ///
+  /// In en, this message translates to:
+  /// **'Resting energy (BMR)'**
+  String get energyBmr;
+
+  /// No description provided for @energyKcalDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal a day'**
+  String energyKcalDay(String kcal);
+
+  /// No description provided for @energyBmrSub.
+  ///
+  /// In en, this message translates to:
+  /// **'What your body uses at rest — breathing, heartbeat, staying warm. Estimated from your weight, height, age and sex (Mifflin-St Jeor, about ±10%).'**
+  String get energyBmrSub;
+
+  /// No description provided for @energyNeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your height, weight, age and sex to see your resting energy.'**
+  String get energyNeeds;
+
   /// No description provided for @bodyHistory.
   ///
   /// In en, this message translates to:
