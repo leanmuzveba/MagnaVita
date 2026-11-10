@@ -3514,7 +3514,7 @@ abstract class AppLocalizations {
   /// No description provided for @bodyAboutBmiBody.
   ///
   /// In en, this message translates to:
-  /// **'BMI compares weight with height. It’s a quick screening number, not a diagnosis: it can’t tell muscle from fat, and it reads differently for athletes, older adults, pregnancy and some ethnic groups. Body-fat estimates can be several percent off. Treat these numbers as one signal among many — MagnaVita won’t set diets or calorie targets from them, and a healthcare professional can help you interpret them.'**
+  /// **'BMI compares weight with height. It’s a quick screening number, not a diagnosis: it can’t tell muscle from fat, and it reads differently for athletes, older adults, pregnancy and some ethnic groups. Body-fat estimates can be several percent off. Treat these numbers as one signal among many — MagnaVita never sets calorie targets from BMI alone, and a healthcare professional can help you interpret them.'**
   String get bodyAboutBmiBody;
 
   /// No description provided for @energyBmr.
@@ -3630,6 +3630,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Physical job plus daily training'**
   String get levelVeryActiveSub;
+
+  /// No description provided for @goalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your weight goal'**
+  String get goalTitle;
+
+  /// No description provided for @goalSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a goal weight'**
+  String get goalSet;
+
+  /// No description provided for @goalEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Change goal'**
+  String get goalEdit;
+
+  /// No description provided for @goalRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove goal'**
+  String get goalRemove;
+
+  /// No description provided for @goalWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal weight ({unit})'**
+  String goalWeight(String unit);
+
+  /// No description provided for @goalPace.
+  ///
+  /// In en, this message translates to:
+  /// **'How fast'**
+  String get goalPace;
+
+  /// No description provided for @goalPacePerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} a week'**
+  String goalPacePerWeek(String amount);
+
+  /// No description provided for @goalTooLow.
+  ///
+  /// In en, this message translates to:
+  /// **'That’s below the healthy range for your height. The lowest goal MagnaVita sets is {min}.'**
+  String goalTooLow(String min);
+
+  /// No description provided for @goalSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{goal} at {pace} a week'**
+  String goalSummary(String goal, String pace);
+
+  /// No description provided for @goalEatLose.
+  ///
+  /// In en, this message translates to:
+  /// **'Eat about {kcal} kcal a day to lose about {amount} a week'**
+  String goalEatLose(String kcal, String amount);
+
+  /// No description provided for @goalEatGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Eat about {kcal} kcal a day to gain about {amount} a week'**
+  String goalEatGain(String kcal, String amount);
+
+  /// No description provided for @goalEatMaintain.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re at your goal. About {kcal} kcal a day keeps you there.'**
+  String goalEatMaintain(String kcal);
+
+  /// No description provided for @goalLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept at your safe minimum of {kcal} kcal a day — never below your resting energy, or 1,200 (women) / 1,500 (men). Moving more is a safer way to go faster.'**
+  String goalLimited(String kcal);
+
+  /// No description provided for @goalGainCapped.
+  ///
+  /// In en, this message translates to:
+  /// **'Gaining is limited to {amount} a week so it’s mostly muscle, not fat.'**
+  String goalGainCapped(String amount);
+
+  /// No description provided for @goalNeedsEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how active you are above to get a calorie target.'**
+  String get goalNeedsEnergy;
+
+  /// No description provided for @goalEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'An estimate. Bodies adapt, so check your weigh-ins every few weeks and adjust. If you’re pregnant, breastfeeding, have a medical condition or a history of disordered eating, talk to a healthcare professional first.'**
+  String get goalEstimate;
 
   /// No description provided for @bodyHistory.
   ///

@@ -106,3 +106,74 @@ Energy? energyFrom({
   if (chosen == null) return null;
   return Energy(resting: resting, maintenance: resting * chosen.factor, level: chosen, measured: false);
 }
+
+/// Energy in a kilogram of body weight (the usual rule of thumb).
+const kcalPerKg = 7700.0;
+
+/// Paces you can pick, in kg a week. Gaining is capped at 0.5 kg.
+const paceOptionsKg = [0.25, 0.5, 0.75, 1.0];
+const maxGainPaceKg = 0.5;
+
+/// The lowest daily target MagnaVita suggests: your resting energy, and never
+/// under 1200 kcal (women) or 1500 kcal (men).
+double calorieFloor(double resting, Sex sex) => math.max(resting, sex == Sex.female ? 1200 : 1500);
+
+/// The lowest goal weight allowed: BMI 18.5 at [heightCm].
+double minGoalKg(double heightCm) => healthyRange(heightCm).low;
+
+enum WeightDirection { lose, maintain, gain }
+
+/// Within half a kilo of the goal counts as there.
+WeightDirection directionFor(double currentKg, double goalKg) => (goalKg - currentKg).abs() < 0.5
+    ? WeightDirection.maintain
+    : goalKg < currentKg
+    ? WeightDirection.lose
+    : WeightDirection.gain;
+
+/// A goal weight and how fast to get there.
+class WeightGoal {
+  const WeightGoal({required this.goalKg, this.paceKg = 0.5});
+  final double goalKg;
+  final double paceKg; // per week
+
+  Map<String, Object> toJson() => {'goalKg': goalKg, 'paceKg': paceKg};
+
+  static WeightGoal? fromJson(Map<String, dynamic>? j) => j == null
+      ? null
+      : WeightGoal(goalKg: (j['goalKg'] as num).toDouble(), paceKg: (j['paceKg'] as num).toDouble());
+}
+
+/// Daily calories for a goal, and the pace they actually give.
+class CalorieTarget {
+  const CalorieTarget({required this.direction, required this.kcal, required this.weeklyKg, this.limited = false});
+  final WeightDirection direction;
+  final double kcal;
+
+  /// Expected change a week at [kcal] (negative = losing).
+  final double weeklyKg;
+
+  /// True when the safe minimum stopped the target going lower.
+  final bool limited;
+}
+
+CalorieTarget calorieTarget({required Energy energy, required Sex sex, required double currentKg, required WeightGoal goal}) {
+  final direction = directionFor(currentKg, goal.goalKg);
+  final m = energy.maintenance;
+  switch (direction) {
+    case WeightDirection.maintain:
+      return CalorieTarget(direction: direction, kcal: m, weeklyKg: 0);
+    case WeightDirection.gain:
+      final pace = math.min(goal.paceKg, maxGainPaceKg);
+      return CalorieTarget(direction: direction, kcal: m + pace * kcalPerKg / 7, weeklyKg: pace);
+    case WeightDirection.lose:
+      final floor = calorieFloor(energy.resting, sex);
+      final wanted = m - goal.paceKg * kcalPerKg / 7;
+      final kcal = math.max(wanted, floor);
+      return CalorieTarget(
+        direction: direction,
+        kcal: kcal,
+        weeklyKg: -math.max(0, m - kcal) * 7 / kcalPerKg,
+        limited: wanted < floor,
+      );
+  }
+}

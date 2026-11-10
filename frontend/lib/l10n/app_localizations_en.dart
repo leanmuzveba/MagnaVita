@@ -1991,7 +1991,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bodyAboutBmiBody =>
-      'BMI compares weight with height. It’s a quick screening number, not a diagnosis: it can’t tell muscle from fat, and it reads differently for athletes, older adults, pregnancy and some ethnic groups. Body-fat estimates can be several percent off. Treat these numbers as one signal among many — MagnaVita won’t set diets or calorie targets from them, and a healthcare professional can help you interpret them.';
+      'BMI compares weight with height. It’s a quick screening number, not a diagnosis: it can’t tell muscle from fat, and it reads differently for athletes, older adults, pregnancy and some ethnic groups. Body-fat estimates can be several percent off. Treat these numbers as one signal among many — MagnaVita never sets calorie targets from BMI alone, and a healthcare professional can help you interpret them.';
 
   @override
   String get energyBmr => 'Resting energy (BMR)';
@@ -2056,6 +2056,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get levelVeryActiveSub => 'Physical job plus daily training';
+
+  @override
+  String get goalTitle => 'Your weight goal';
+
+  @override
+  String get goalSet => 'Set a goal weight';
+
+  @override
+  String get goalEdit => 'Change goal';
+
+  @override
+  String get goalRemove => 'Remove goal';
+
+  @override
+  String goalWeight(String unit) {
+    return 'Goal weight ($unit)';
+  }
+
+  @override
+  String get goalPace => 'How fast';
+
+  @override
+  String goalPacePerWeek(String amount) {
+    return '$amount a week';
+  }
+
+  @override
+  String goalTooLow(String min) {
+    return 'That’s below the healthy range for your height. The lowest goal MagnaVita sets is $min.';
+  }
+
+  @override
+  String goalSummary(String goal, String pace) {
+    return '$goal at $pace a week';
+  }
+
+  @override
+  String goalEatLose(String kcal, String amount) {
+    return 'Eat about $kcal kcal a day to lose about $amount a week';
+  }
+
+  @override
+  String goalEatGain(String kcal, String amount) {
+    return 'Eat about $kcal kcal a day to gain about $amount a week';
+  }
+
+  @override
+  String goalEatMaintain(String kcal) {
+    return 'You’re at your goal. About $kcal kcal a day keeps you there.';
+  }
+
+  @override
+  String goalLimited(String kcal) {
+    return 'Kept at your safe minimum of $kcal kcal a day — never below your resting energy, or 1,200 (women) / 1,500 (men). Moving more is a safer way to go faster.';
+  }
+
+  @override
+  String goalGainCapped(String amount) {
+    return 'Gaining is limited to $amount a week so it’s mostly muscle, not fat.';
+  }
+
+  @override
+  String get goalNeedsEnergy => 'Choose how active you are above to get a calorie target.';
+
+  @override
+  String get goalEstimate =>
+      'An estimate. Bodies adapt, so check your weigh-ins every few weeks and adjust. If you’re pregnant, breastfeeding, have a medical condition or a history of disordered eating, talk to a healthcare professional first.';
 
   @override
   String get bodyHistory => 'Weight history';

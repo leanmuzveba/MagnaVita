@@ -29,6 +29,34 @@ void main() {
     expect(ActivityLevel.nearest(2.4), ActivityLevel.veryActive);
   });
 
+  test('calorie target: pace, safe minimum, gain cap, at goal', () {
+    const man = Energy(resting: 1855, maintenance: 2875, level: ActivityLevel.moderate, measured: false);
+    var t = calorieTarget(energy: man, sex: Sex.male, currentKg: 90, goal: const WeightGoal(goalKg: 80));
+    expect(t.direction, WeightDirection.lose);
+    expect(t.kcal, 2875 - 550);
+    expect(t.weeklyKg, closeTo(-0.5, 1e-9));
+    expect(t.limited, isFalse);
+    // 1 kg a week would mean 1775 kcal, under his resting energy (1855).
+    t = calorieTarget(energy: man, sex: Sex.male, currentKg: 90, goal: const WeightGoal(goalKg: 80, paceKg: 1));
+    expect(t.kcal, 1855);
+    expect(t.limited, isTrue);
+    expect(t.weeklyKg, closeTo(-(2875 - 1855) * 7 / 7700, 1e-9));
+    // A small, sedentary woman: never below 1200 or her resting energy.
+    const woman = Energy(resting: 1150, maintenance: 1380, level: ActivityLevel.sedentary, measured: false);
+    t = calorieTarget(energy: woman, sex: Sex.female, currentKg: 60, goal: const WeightGoal(goalKg: 55));
+    expect(t.kcal, 1200);
+    expect(t.limited, isTrue);
+    // Gaining is capped at 0.5 kg a week.
+    t = calorieTarget(energy: man, sex: Sex.male, currentKg: 70, goal: const WeightGoal(goalKg: 75, paceKg: 1));
+    expect(t.direction, WeightDirection.gain);
+    expect(t.kcal, 2875 + 550);
+    // Within half a kilo: at goal.
+    t = calorieTarget(energy: man, sex: Sex.male, currentKg: 80.3, goal: const WeightGoal(goalKg: 80));
+    expect(t.direction, WeightDirection.maintain);
+    expect(t.kcal, 2875);
+    expect(minGoalKg(180).toStringAsFixed(1), '59.9');
+  });
+
   test('past days: phone step totals since setup give a measured level', () async {
     final clock = FakeClock(DateTime(2026, 11, 10, 9));
     final db = await openTestDb();

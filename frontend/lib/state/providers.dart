@@ -1394,6 +1394,27 @@ final energyProvider = FutureProvider<Energy?>((ref) async {
   );
 });
 
+/// Your goal weight and pace, or null.
+final weightGoalProvider = FutureProvider<WeightGoal?>((ref) async {
+  final json = await ref.watch(settingsRepositoryProvider).value('goal.weight');
+  return json == null ? null : WeightGoal.fromJson(jsonDecode(json) as Map<String, dynamic>);
+});
+
+Future<void> setWeightGoal(WidgetRef ref, WeightGoal? goal) async {
+  await ref.read(settingsRepositoryProvider).setValue('goal.weight', goal == null ? null : jsonEncode(goal.toJson()));
+  ref.invalidate(weightGoalProvider);
+}
+
+/// Daily calories for your goal; null without a goal or maintenance calories.
+final calorieTargetProvider = FutureProvider<CalorieTarget?>((ref) async {
+  final energy = await ref.watch(energyProvider.future);
+  final goal = await ref.watch(weightGoalProvider.future);
+  final sex = (await ref.watch(bodyProfileProvider.future)).sex;
+  final weighIns = await ref.watch(weighInsProvider.future);
+  if (energy == null || goal == null || sex == null || weighIns.isEmpty) return null;
+  return calorieTarget(energy: energy, sex: sex, currentKg: weighIns.last.weightKg, goal: goal);
+});
+
 /// Imports the last week's watch workouts into Activity (once each).
 /// Returns how many were new.
 final watchSyncProvider = FutureProvider<int>((ref) async {

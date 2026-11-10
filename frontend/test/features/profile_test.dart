@@ -91,6 +91,19 @@ void main() {
     expect(find.text('2,875 kcal a day'), findsOneWidget); // 1855 × 1.55
     expect(find.textContaining('The level you chose.'), findsOneWidget);
 
+    // Goal: below BMI 18.5 is refused; 80 kg at 0.5 kg a week → 2875 − 550.
+    await tester.tap(find.text('Set a goal weight'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, '50');
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('The lowest goal MagnaVita sets is 59.9 kg'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).last, '80');
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
+    expect(find.text('80 kg at 0.5 kg a week'), findsOneWidget);
+    expect(find.text('Eat about 2,325 kcal a day to lose about 0.5 kg a week'), findsOneWidget);
+
     // History: delete the weigh-in → back to "add your weight".
     await tester.tap(find.byTooltip(RegExp('^90 kg on ')));
     await tester.pumpAndSettle();

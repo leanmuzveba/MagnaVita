@@ -135,7 +135,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     _Numbers(profile: profile, latest: latest, age: age, adult: adult, units: units),
                     if (adult) ...[
                       const SizedBox(height: 12),
-                      EnergySection(profile: profile, latest: latest, today: t),
+                      EnergySection(
+                        profile: profile,
+                        latest: latest,
+                        today: t,
+                        weight: units.weight,
+                        imperial: units.imperial,
+                      ),
                     ],
                     const SizedBox(height: 22),
                     Row(
