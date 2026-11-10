@@ -4033,6 +4033,240 @@ abstract class AppLocalizations {
   /// **'Your account and the profile and goals saved in it are deleted for good. What’s on this phone stays; use “Delete all data” to remove that too.'**
   String get accountDeleteBody;
 
+  /// No description provided for @goalLoseWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose weight'**
+  String get goalLoseWeight;
+
+  /// No description provided for @goalLoseWeightSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Steadily, at a pace you choose'**
+  String get goalLoseWeightSub;
+
+  /// No description provided for @goalMaintain.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay where I am'**
+  String get goalMaintain;
+
+  /// No description provided for @goalMaintainSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my weight steady and eat well'**
+  String get goalMaintainSub;
+
+  /// No description provided for @goalBuildMuscle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build muscle'**
+  String get goalBuildMuscle;
+
+  /// No description provided for @goalBuildMuscleSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Get stronger and add muscle'**
+  String get goalBuildMuscleSub;
+
+  /// No description provided for @goalGetFitter.
+  ///
+  /// In en, this message translates to:
+  /// **'Get fitter'**
+  String get goalGetFitter;
+
+  /// No description provided for @goalGetFitterSub.
+  ///
+  /// In en, this message translates to:
+  /// **'More energy, steps and stamina'**
+  String get goalGetFitterSub;
+
+  /// No description provided for @goalFasting.
+  ///
+  /// In en, this message translates to:
+  /// **'Better fasting habits'**
+  String get goalFasting;
+
+  /// No description provided for @goalFastingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'A calm, regular eating window'**
+  String get goalFastingSub;
+
+  /// No description provided for @setupStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {n} of {total}'**
+  String setupStep(int n, int total);
+
+  /// No description provided for @setupSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get setupSkip;
+
+  /// No description provided for @setupBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get setupBack;
+
+  /// No description provided for @setupFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get setupFinish;
+
+  /// No description provided for @setupOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get setupOptional;
+
+  /// No description provided for @setupAboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get setupAboutTitle;
+
+  /// No description provided for @setupAboutSub.
+  ///
+  /// In en, this message translates to:
+  /// **'So the numbers MagnaVita shows fit you. Leave out anything you’d rather not share.'**
+  String get setupAboutSub;
+
+  /// No description provided for @setupSexWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for resting energy and body-fat estimates only.'**
+  String get setupSexWhy;
+
+  /// No description provided for @setupBirthYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year of birth'**
+  String get setupBirthYear;
+
+  /// No description provided for @setupYearInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check the year — MagnaVita’s goals are for people 18 and over.'**
+  String get setupYearInvalid;
+
+  /// No description provided for @setupWeightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your weight today'**
+  String get setupWeightTitle;
+
+  /// No description provided for @setupWeightSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your starting point. It stays private, and you can turn weight tracking off later.'**
+  String get setupWeightSub;
+
+  /// No description provided for @setupGoalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What’s your main goal?'**
+  String get setupGoalTitle;
+
+  /// No description provided for @setupGoalSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Activity and Home pages are arranged around it. Change it any time in Profile.'**
+  String get setupGoalSub;
+
+  /// No description provided for @setupGoalSafety.
+  ///
+  /// In en, this message translates to:
+  /// **'MagnaVita never suggests a goal below a healthy weight for your height, or eating less than your body needs at rest.'**
+  String get setupGoalSafety;
+
+  /// No description provided for @setupActivityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How active are you?'**
+  String get setupActivityTitle;
+
+  /// No description provided for @setupActivitySub.
+  ///
+  /// In en, this message translates to:
+  /// **'On a usual day, before any changes.'**
+  String get setupActivitySub;
+
+  /// No description provided for @setupActivityLater.
+  ///
+  /// In en, this message translates to:
+  /// **'After a week of logged activities or steps, MagnaVita works this out from your records instead.'**
+  String get setupActivityLater;
+
+  /// No description provided for @setupMealsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How many meals a day?'**
+  String get setupMealsTitle;
+
+  /// No description provided for @setupMealsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Snacks count if they’re proper meals for you.'**
+  String get setupMealsSub;
+
+  /// No description provided for @setupMealsN.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} meals'**
+  String setupMealsN(int n);
+
+  /// No description provided for @setupMealsFivePlus.
+  ///
+  /// In en, this message translates to:
+  /// **'5 or more'**
+  String get setupMealsFivePlus;
+
+  /// No description provided for @setupMealsWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Used to split your daily calories into a guide for each meal.'**
+  String get setupMealsWhy;
+
+  /// No description provided for @setupTrainingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you train?'**
+  String get setupTrainingTitle;
+
+  /// No description provided for @setupTrainingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts like the gym, home exercise or classes.'**
+  String get setupTrainingSub;
+
+  /// No description provided for @setupTrainingDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days a week'**
+  String get setupTrainingDays;
+
+  /// No description provided for @setupNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get setupNotYet;
+
+  /// No description provided for @setupDietTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Food preferences'**
+  String get setupDietTitle;
+
+  /// No description provided for @setupDietSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipes with your allergens are never suggested.'**
+  String get setupDietSub;
+
   /// No description provided for @bodyHistory.
   ///
   /// In en, this message translates to:

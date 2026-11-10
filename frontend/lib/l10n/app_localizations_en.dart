@@ -2301,6 +2301,129 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your account and the profile and goals saved in it are deleted for good. What’s on this phone stays; use “Delete all data” to remove that too.';
 
   @override
+  String get goalLoseWeight => 'Lose weight';
+
+  @override
+  String get goalLoseWeightSub => 'Steadily, at a pace you choose';
+
+  @override
+  String get goalMaintain => 'Stay where I am';
+
+  @override
+  String get goalMaintainSub => 'Keep my weight steady and eat well';
+
+  @override
+  String get goalBuildMuscle => 'Build muscle';
+
+  @override
+  String get goalBuildMuscleSub => 'Get stronger and add muscle';
+
+  @override
+  String get goalGetFitter => 'Get fitter';
+
+  @override
+  String get goalGetFitterSub => 'More energy, steps and stamina';
+
+  @override
+  String get goalFasting => 'Better fasting habits';
+
+  @override
+  String get goalFastingSub => 'A calm, regular eating window';
+
+  @override
+  String setupStep(int n, int total) {
+    return 'Step $n of $total';
+  }
+
+  @override
+  String get setupSkip => 'Skip for now';
+
+  @override
+  String get setupBack => 'Back';
+
+  @override
+  String get setupFinish => 'Finish';
+
+  @override
+  String get setupOptional => 'Optional';
+
+  @override
+  String get setupAboutTitle => 'About you';
+
+  @override
+  String get setupAboutSub => 'So the numbers MagnaVita shows fit you. Leave out anything you’d rather not share.';
+
+  @override
+  String get setupSexWhy => 'Used for resting energy and body-fat estimates only.';
+
+  @override
+  String get setupBirthYear => 'Year of birth';
+
+  @override
+  String get setupYearInvalid => 'Please check the year — MagnaVita’s goals are for people 18 and over.';
+
+  @override
+  String get setupWeightTitle => 'Your weight today';
+
+  @override
+  String get setupWeightSub => 'Your starting point. It stays private, and you can turn weight tracking off later.';
+
+  @override
+  String get setupGoalTitle => 'What’s your main goal?';
+
+  @override
+  String get setupGoalSub => 'Your Activity and Home pages are arranged around it. Change it any time in Profile.';
+
+  @override
+  String get setupGoalSafety =>
+      'MagnaVita never suggests a goal below a healthy weight for your height, or eating less than your body needs at rest.';
+
+  @override
+  String get setupActivityTitle => 'How active are you?';
+
+  @override
+  String get setupActivitySub => 'On a usual day, before any changes.';
+
+  @override
+  String get setupActivityLater =>
+      'After a week of logged activities or steps, MagnaVita works this out from your records instead.';
+
+  @override
+  String get setupMealsTitle => 'How many meals a day?';
+
+  @override
+  String get setupMealsSub => 'Snacks count if they’re proper meals for you.';
+
+  @override
+  String setupMealsN(int n) {
+    return '$n meals';
+  }
+
+  @override
+  String get setupMealsFivePlus => '5 or more';
+
+  @override
+  String get setupMealsWhy => 'Used to split your daily calories into a guide for each meal.';
+
+  @override
+  String get setupTrainingTitle => 'Do you train?';
+
+  @override
+  String get setupTrainingSub => 'Workouts like the gym, home exercise or classes.';
+
+  @override
+  String get setupTrainingDays => 'Days a week';
+
+  @override
+  String get setupNotYet => 'Not yet';
+
+  @override
+  String get setupDietTitle => 'Food preferences';
+
+  @override
+  String get setupDietSub => 'Recipes with your allergens are never suggested.';
+
+  @override
   String get bodyHistory => 'Weight history';
 
   @override

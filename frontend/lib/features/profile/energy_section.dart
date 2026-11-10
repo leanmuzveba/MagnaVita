@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math' as math;
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
 import '../../core/l10n.dart';
@@ -15,6 +15,13 @@ import '../../state/providers.dart';
 import '../food/food_labels.dart' show formatNutrient;
 
 String formatKcal(double kcal) => NumberFormat.decimalPattern().format(kcal.round());
+
+/// A weekly pace: "0.25 kg" / "0.55 lb" (two decimals at most, no trailing zeros).
+String formatPace(double kg, {required bool imperial}) {
+  final v = imperial ? kg / kgPerLb : kg;
+  final t = v.toStringAsFixed(2).replaceFirst(RegExp(r'\.?0+$'), '');
+  return '$t ${imperial ? 'lb' : 'kg'}';
+}
 
 String levelLabel(AppLocalizations l, ActivityLevel level) => switch (level) {
   ActivityLevel.sedentary => l.levelSedentary,
@@ -308,7 +315,7 @@ class _GoalPart extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  l.goalSummary(weight(goal.goalKg), weight(goal.paceKg)),
+                  l.goalSummary(weight(goal.goalKg), formatPace(goal.paceKg, imperial: imperial)),
                   style: AppText.cardValue.copyWith(fontSize: 16),
                 ),
               ),
@@ -324,8 +331,8 @@ class _GoalPart extends ConsumerWidget {
           else if (target != null) ...[
             const SizedBox(height: 4),
             Text(switch (target.direction) {
-              WeightDirection.lose => l.goalEatLose(formatKcal(target.kcal), weight(-target.weeklyKg)),
-              WeightDirection.gain => l.goalEatGain(formatKcal(target.kcal), weight(target.weeklyKg)),
+              WeightDirection.lose => l.goalEatLose(formatKcal(target.kcal), formatPace(-target.weeklyKg, imperial: imperial)),
+              WeightDirection.gain => l.goalEatGain(formatKcal(target.kcal), formatPace(target.weeklyKg, imperial: imperial)),
               WeightDirection.maintain => l.goalEatMaintain(formatKcal(target.kcal)),
             }, style: AppText.title.copyWith(fontSize: 17, color: AppColors.primary)),
             if (target.limited) ...[
@@ -334,7 +341,7 @@ class _GoalPart extends ConsumerWidget {
             ],
             if (target.direction == WeightDirection.gain && goal.paceKg > maxGainPaceKg) ...[
               const SizedBox(height: 6),
-              Text(l.goalGainCapped(weight(maxGainPaceKg)), style: small),
+              Text(l.goalGainCapped(formatPace(maxGainPaceKg, imperial: imperial)), style: small),
             ],
           ],
           const SizedBox(height: 8),
@@ -409,7 +416,7 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
           children: [
             for (final p in paceOptionsKg)
               RuvaChip(
-                label: l.goalPacePerWeek(widget.weight(p)),
+                label: l.goalPacePerWeek(formatPace(p, imperial: widget.imperial)),
                 selected: _pace == p,
                 onTap: () => setState(() => _pace = p),
               ),

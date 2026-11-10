@@ -42,11 +42,14 @@ Uint8List? backupFile;
 
 late FakeAccountService accounts;
 
-/// [accountChosen]: the account step is already done (used without one).
+/// [accountChosen]: the account step is already done (used without one);
+/// [setupDone]: the setup questions are already answered.
 Future<FakeClock> pumpApp(
   WidgetTester tester, {
   AgeEligibility eligibility = AgeEligibility.adult,
   bool accountChosen = true,
+  bool setupDone = true,
+  Future<void> Function(ProviderContainer c)? before,
 }) async {
   await loadAppFonts();
   final clock = FakeClock(DateTime(2026, 10, 4, 7, 24, 36));
@@ -88,6 +91,8 @@ Future<FakeClock> pumpApp(
       .read(settingsRepositoryProvider)
       .save(AppSettings(eligibility: eligibility, onboardingComplete: eligibility != AgeEligibility.unknown));
   if (accountChosen) await container.read(settingsRepositoryProvider).setFlag('account.local', true);
+  if (setupDone) await container.read(settingsRepositoryProvider).setFlag('setup.done', true);
+  await before?.call(container);
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);

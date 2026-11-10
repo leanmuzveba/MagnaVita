@@ -28,6 +28,7 @@ import '../domain/activity.dart';
 import '../domain/body.dart';
 import '../domain/energy.dart';
 import '../domain/fasting_session.dart';
+import '../domain/goals.dart';
 import '../domain/fasting_timer.dart';
 import '../domain/food.dart';
 import '../domain/history.dart';
@@ -79,6 +80,7 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> save(AppSettings next) async {
     await ref.read(settingsRepositoryProvider).save(next);
     state = AsyncData(next);
+    unawaited(ref.read(accountActionsProvider).push());
   }
 
   Future<void> change(AppSettings Function(AppSettings) edit) async => save(edit(await future));
@@ -1145,12 +1147,14 @@ class BodyActions {
   Future<void> saveProfile(BodyProfile p) async {
     await _repo.saveProfile(p);
     _ref.invalidate(bodyProfileProvider);
+    unawaited(_ref.read(accountActionsProvider).push());
   }
 
   Future<void> addWeighIn(WeighIn w) async {
     if (w.weightKg <= 0) return;
     await _repo.addWeighIn(w);
     _ref.invalidate(weighInsProvider);
+    unawaited(_ref.read(accountActionsProvider).push());
   }
 
   Future<void> updateWeighIn(WeighIn w) async {
@@ -1376,6 +1380,7 @@ final chosenActivityLevelProvider = FutureProvider<ActivityLevel?>(
 Future<void> setChosenActivityLevel(WidgetRef ref, ActivityLevel level) async {
   await ref.read(settingsRepositoryProvider).setValue('energy.level', level.name);
   ref.invalidate(chosenActivityLevelProvider);
+  unawaited(ref.read(accountActionsProvider).push());
 }
 
 /// Resting energy and maintenance calories from your latest weigh-in; null
@@ -1404,6 +1409,29 @@ final weightGoalProvider = FutureProvider<WeightGoal?>((ref) async {
 Future<void> setWeightGoal(WidgetRef ref, WeightGoal? goal) async {
   await ref.read(settingsRepositoryProvider).setValue('goal.weight', goal == null ? null : jsonEncode(goal.toJson()));
   ref.invalidate(weightGoalProvider);
+  unawaited(ref.read(accountActionsProvider).push());
+}
+
+// --- Setup answers -------------------------------------------------------------------
+
+/// Your goal, meals per day and training from setup.
+final userGoalsProvider = FutureProvider<UserGoals>((ref) async {
+  final json = await ref.watch(settingsRepositoryProvider).value('goals');
+  return json == null ? const UserGoals() : UserGoals.fromJson(jsonDecode(json) as Map<String, dynamic>);
+});
+
+Future<void> setUserGoals(WidgetRef ref, UserGoals goals) async {
+  await ref.read(settingsRepositoryProvider).setValue('goals', jsonEncode(goals.toJson()));
+  ref.invalidate(userGoalsProvider);
+}
+
+/// Setup has been finished (or skipped) on this phone.
+final setupDoneProvider = FutureProvider<bool>((ref) => ref.watch(settingsRepositoryProvider).flag('setup.done'));
+
+Future<void> setSetupDone(WidgetRef ref) async {
+  await ref.read(settingsRepositoryProvider).setFlag('setup.done', true);
+  ref.invalidate(setupDoneProvider);
+  await ref.read(accountActionsProvider).push();
 }
 
 /// Daily calories for your goal; null without a goal or maintenance calories.
@@ -1541,7 +1569,9 @@ class AccountActions {
 
   AccountService get _service => _ref.read(accountServiceProvider);
 
-  /// After signing in or up: use the account's name if you haven't set one.
+  /// After signing in or up: a finished profile saved in the account comes
+  /// to this phone (a new phone gets your setup back); otherwise this phone's
+  /// profile goes to the account. Uses the account's name if you have none.
   Future<void> signedIn({String? name}) async {
     final s = await _ref.read(settingsProvider.future);
     final fromAccount = (name ?? _service.current?.name ?? '').trim();
@@ -1549,8 +1579,116 @@ class AccountActions {
       await _ref.read(settingsProvider.notifier).save(s.copyWith(userName: fromAccount));
     }
     await _ref.read(settingsRepositoryProvider).setFlag('account.local', false);
+    try {
+      final remote = await _service.fetchProfile();
+      if (remote != null && remote['setup_done'] == true) {
+        await _apply(remote);
+      } else {
+        await push();
+      }
+    } on Exception {
+      // Offline: the next change pushes it.
+    }
     _ref.invalidate(localOnlyProvider);
     _ref.invalidate(accountProvider);
+  }
+
+  /// Saves this phone's profile and goals to the account (best effort).
+  Future<void> push() async {
+    if (_service.current == null) return;
+    try {
+      await _service.saveProfile(await _fields());
+    } on Exception {
+      // Offline or signed out meanwhile; the next change tries again.
+    }
+  }
+
+  Future<Map<String, Object?>> _fields() async {
+    final repo = _ref.read(settingsRepositoryProvider);
+    final s = await repo.load();
+    final body = await _ref.read(bodyRepositoryProvider).profile();
+    final weighIns = await _ref.read(bodyRepositoryProvider).weighIns();
+    final goalJson = await repo.value('goal.weight');
+    final goal = goalJson == null ? null : WeightGoal.fromJson(jsonDecode(goalJson) as Map<String, dynamic>);
+    final goalsJson = await repo.value('goals');
+    final goals = goalsJson == null ? const UserGoals() : UserGoals.fromJson(jsonDecode(goalsJson) as Map<String, dynamic>);
+    return {
+      'display_name': s.userName.trim(),
+      'sex': body.sex?.name,
+      'birth_year': body.birthYear,
+      'height_cm': body.heightCm,
+      'weight_kg': weighIns.isEmpty ? null : weighIns.last.weightKg,
+      'main_goal': goals.main?.name,
+      'goal_weight_kg': goal?.goalKg,
+      'pace_kg': goal?.paceKg,
+      'activity_level': await repo.value('energy.level'),
+      'meals_per_day': goals.mealsPerDay,
+      'training_days': goals.trainingDays,
+      'experience': goals.level?.name,
+      'equipment': goals.equipment?.name,
+      'diet': s.diet.name,
+      'allergies': [for (final a in s.allergies) a.name],
+      'units': s.units.name,
+      'setup_done': await repo.flag('setup.done'),
+    };
+  }
+
+  /// Puts an account's saved profile on this phone.
+  Future<void> _apply(Map<String, dynamic> r) async {
+    final repo = _ref.read(settingsRepositoryProvider);
+    final s = await _ref.read(settingsProvider.future);
+    final name = (r['display_name'] as String?)?.trim() ?? '';
+    await repo.save(
+      s.copyWith(
+        userName: name.isEmpty ? null : name,
+        units: UnitSystem.values.asNameMap()[r['units']],
+        diet: DietPreference.values.asNameMap()[r['diet']],
+        allergies: {for (final a in (r['allergies'] as List?) ?? const []) ?Allergen.values.asNameMap()[a]},
+      ),
+    );
+    final bodyRepo = _ref.read(bodyRepositoryProvider);
+    final body = await bodyRepo.profile();
+    await bodyRepo.saveProfile(
+      BodyProfile(
+        heightCm: (r['height_cm'] as num?)?.toDouble() ?? body.heightCm,
+        birthYear: (r['birth_year'] as num?)?.toInt() ?? body.birthYear,
+        sex: Sex.values.asNameMap()[r['sex']] ?? body.sex,
+        trackWeight: body.trackWeight,
+      ),
+    );
+    final kg = (r['weight_kg'] as num?)?.toDouble();
+    if (kg != null && (await bodyRepo.weighIns()).isEmpty) {
+      await bodyRepo.addWeighIn(WeighIn(at: _ref.read(clockProvider)().toUtc(), weightKg: kg));
+    }
+    final goalKg = (r['goal_weight_kg'] as num?)?.toDouble();
+    if (goalKg != null) {
+      final pace = (r['pace_kg'] as num?)?.toDouble() ?? 0.5;
+      await repo.setValue('goal.weight', jsonEncode(WeightGoal(goalKg: goalKg, paceKg: pace).toJson()));
+    }
+    if (ActivityLevel.values.asNameMap()[r['activity_level']] case final level?) {
+      await repo.setValue('energy.level', level.name);
+    }
+    await repo.setValue(
+      'goals',
+      jsonEncode(
+        UserGoals(
+          main: MainGoal.values.asNameMap()[r['main_goal']],
+          mealsPerDay: (r['meals_per_day'] as num?)?.toInt(),
+          trainingDays: (r['training_days'] as num?)?.toInt(),
+          level: PlanLevel.values.asNameMap()[r['experience']],
+          equipment: PlanEquipment.values.asNameMap()[r['equipment']],
+        ).toJson(),
+      ),
+    );
+    await repo.setFlag('setup.done', true);
+    _ref
+      ..invalidate(settingsProvider)
+      ..invalidate(bodyProfileProvider)
+      ..invalidate(weighInsProvider)
+      ..invalidate(weightGoalProvider)
+      ..invalidate(chosenActivityLevelProvider)
+      ..invalidate(userGoalsProvider)
+      ..invalidate(setupDoneProvider);
   }
 
   Future<void> useWithoutAccount() async {

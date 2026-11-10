@@ -10,6 +10,7 @@ import 'core/theme/app_theme.dart';
 import 'data/app_database.dart';
 import 'domain/settings.dart';
 import 'features/account/auth_screen.dart';
+import 'features/account/setup_screen.dart';
 import 'features/onboarding/onboarding.dart';
 import 'features/shell/app_shell.dart';
 import 'features/splash/splash_screen.dart';
@@ -49,7 +50,8 @@ class LifeFastingApp extends StatelessWidget {
 }
 
 /// Splash (until data has loaded and the splash has shown briefly), then
-/// onboarding → (adult) account → app, or (under 18) education-only screen.
+/// onboarding → (adult) account → setup questions → app, or (under 18)
+/// education-only screen.
 class _Gate extends ConsumerStatefulWidget {
   const _Gate();
 
@@ -74,7 +76,8 @@ class _GateState extends ConsumerState<_Gate> {
     final settings = ref.watch(settingsProvider).value;
     final account = ref.watch(accountProvider);
     final localOnly = ref.watch(localOnlyProvider).value;
-    final Widget page = settings == null || !_splashDone || localOnly == null || account.isLoading
+    final setupDone = ref.watch(setupDoneProvider).value;
+    final Widget page = settings == null || !_splashDone || localOnly == null || setupDone == null || account.isLoading
         ? const SplashScreen()
         : !settings.onboardingComplete
         ? const OnboardingScreen()
@@ -82,6 +85,8 @@ class _GateState extends ConsumerState<_Gate> {
         ? const UnderageScreen()
         : account.value == null && !localOnly
         ? const AuthScreen()
+        : !setupDone
+        ? const SetupScreen()
         : const AppShell();
     return AnimatedSwitcher(
       duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 500),
