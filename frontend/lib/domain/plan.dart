@@ -121,6 +121,12 @@ class PlanDay {
   final PlanFocus focus;
   final List<Exercise> exercises; // planned sets × reps (no weights; those come from last time)
 
+  /// About how long it takes: ~40 s a set plus [rest] after it, to the next 5 minutes.
+  int minutes(int rest) {
+    final sets = exercises.fold(0, (n, x) => n + x.sets);
+    return sets == 0 ? 0 : ((sets * (40 + rest) / 60) / 5).ceil() * 5;
+  }
+
   Map<String, Object?> toJson() => {
     'focus': focus.name,
     'exercises': [for (final x in exercises) x.toJson()],

@@ -5833,6 +5833,66 @@ abstract class AppLocalizations {
   /// **'Next'**
   String get planNext;
 
+  /// No description provided for @weekTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get weekTitle;
+
+  /// No description provided for @weekRestDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest day — recovery is part of the plan'**
+  String get weekRestDay;
+
+  /// No description provided for @weekDayCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {n} · {count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String weekDayCard(int n, int count);
+
+  /// No description provided for @weekDayDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get weekDayDone;
+
+  /// No description provided for @weekDayDoneSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'done this round'**
+  String get weekDayDoneSemantics;
+
+  /// No description provided for @weekDayOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the exercises'**
+  String get weekDayOpen;
+
+  /// No description provided for @weekTrained.
+  ///
+  /// In en, this message translates to:
+  /// **'trained'**
+  String get weekTrained;
+
+  /// No description provided for @weekTrainingDay.
+  ///
+  /// In en, this message translates to:
+  /// **'training day'**
+  String get weekTrainingDay;
+
+  /// No description provided for @activityLogAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Log another activity'**
+  String get activityLogAnother;
+
+  /// No description provided for @dayExercisesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap an exercise to see how to do it. Start the day to tick off each set as you go.'**
+  String get dayExercisesHint;
+
   /// No description provided for @planStartDay.
   ///
   /// In en, this message translates to:

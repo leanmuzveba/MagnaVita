@@ -1,3 +1,4 @@
+import 'package:life_fasting/features/activity_water/activity_water_screen.dart' show ActivityScreen;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ Future<void> _addBench(WidgetTester tester) async {
   await tester.tap(find.text(_bench));
   await tester.pumpAndSettle();
 }
+
+final _activityList = find.descendant(of: find.byType(ActivityScreen), matching: find.byType(Scrollable)).first;
 
 void main() {
   test('sets: old "3 × 10" activities still load; each set keeps its weight', () {
@@ -98,7 +101,9 @@ void main() {
     );
     expect('${saved.exercises.single}', '$_bench 2 × 10 · 60 kg');
     expect(saved.kcal, closeTo((5 - 1) * 80 * 40 / 60, 0.01));
+    await tester.scrollUntilVisible(find.bySemanticsLabel(RegExp('$_bench 2 × 10 · 60 kg')), 300, scrollable: _activityList);
     expect(find.bySemanticsLabel(RegExp('$_bench 2 × 10 · 60 kg')), findsOneWidget); // in Recent activity
+    await tester.scrollUntilVisible(find.text('Start workout'), -300, scrollable: _activityList);
     expect(await c.read(workoutProvider.future), isNull);
 
     await tester.tap(find.text('Start workout'));

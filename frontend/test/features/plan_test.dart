@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:life_fasting/data/notification_service.dart';
+import 'package:life_fasting/domain/activity.dart' show Exercise;
 import 'package:life_fasting/domain/plan.dart';
 import 'package:life_fasting/domain/workout.dart';
 import 'package:life_fasting/state/providers.dart';
@@ -58,6 +59,10 @@ void main() {
     final sunday = DateTime(2026, 10, 4, 7);
     expect(push.nextSession(sunday), DateTime(2026, 10, 5));
     expect(push.copyWith(weekdays: [7]).nextSession(sunday), DateTime(2026, 10, 4), reason: 'today counts');
+    // How long a day takes: 15 sets × (40 s + 90 s rest) = 32.5 min → 35.
+    final day = PlanDay(PlanFocus.legs, [for (var i = 0; i < 5; i++) Exercise('x$i', sets: 3, reps: 10)]);
+    expect(day.minutes(90), 35);
+    expect(const PlanDay(PlanFocus.legs, []).minutes(90), 0);
   });
 
   test('home plans only use what you have, at your level', () {
@@ -131,8 +136,21 @@ void main() {
     expect((await c.read(planProvider.future))!.next, 1);
     await tester.pageBack(); // the plan screen
     await tester.pumpAndSettle();
-    expect(find.text('Up next Monday: Day 2 · Back & biceps'), findsOneWidget); // 4 days: Mon, Tue, Thu, Fri
+    // This week: day 1 done, day 2 next (4 days: Mon, Tue, Thu, Fri; today is Sunday, a rest day).
+    expect(find.text('This week'), findsOneWidget);
+    expect(find.text('Rest day — recovery is part of the plan'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp(r'^Chest & triceps, Day 1 · \d exercises, \d+ min, done this round$')), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp(r'^Back & biceps, Day 2 · \d exercises, \d+ min, Next$')), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp(r'^Sunday, Today, trained$')), findsOneWidget);
+    // Tap a day: its exercises, and the button that starts it.
+    await tester.tap(find.bySemanticsLabel(RegExp(r'^Back & biceps, Day 2')));
+    await tester.pumpAndSettle();
+    final day2 = (await c.read(planProvider.future))!.days[1];
+    expect(find.text(day2.exercises.first.name), findsOneWidget);
+    expect(find.text('${day2.exercises.first.sets} × ${day2.exercises.first.log.first.reps}'), findsWidgets);
     expect(find.text('Start day 2'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
 
     // Your week: train Wednesdays too, and get reminded.
     await tester.tap(find.text('Your plan'));

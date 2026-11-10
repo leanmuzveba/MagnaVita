@@ -3359,6 +3359,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get planNext => 'Next';
 
   @override
+  String get weekTitle => 'This week';
+
+  @override
+  String get weekRestDay => 'Rest day — recovery is part of the plan';
+
+  @override
+  String weekDayCard(int n, int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count exercises', one: '1 exercise');
+    return 'Day $n · $_temp0';
+  }
+
+  @override
+  String get weekDayDone => 'Done';
+
+  @override
+  String get weekDayDoneSemantics => 'done this round';
+
+  @override
+  String get weekDayOpen => 'Show the exercises';
+
+  @override
+  String get weekTrained => 'trained';
+
+  @override
+  String get weekTrainingDay => 'training day';
+
+  @override
+  String get activityLogAnother => 'Log another activity';
+
+  @override
+  String get dayExercisesHint => 'Tap an exercise to see how to do it. Start the day to tick off each set as you go.';
+
+  @override
   String planStartDay(int n) {
     return 'Start day $n';
   }

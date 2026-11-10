@@ -16,6 +16,7 @@ import '../../domain/workout.dart';
 import '../../state/providers.dart';
 import '../hydration/hydration_screen.dart';
 import 'goal_focus_card.dart';
+import 'week_plan.dart';
 import '../ring/fasting_ring.dart';
 import '../workout/exercise_picker.dart';
 import '../workout/plan_screen.dart';
@@ -363,17 +364,16 @@ class ActivityScreen extends ConsumerWidget {
     final recent = ref.watch(recentActivitiesProvider).value ?? const [];
     final use24h = ref.watch(settingsProvider).value?.use24HourTime ?? false;
     final goal = ref.watch(userGoalsProvider).value?.main;
-    const workout = _WorkoutCard();
-    const log = RuvaCard(padding: EdgeInsets.all(18), child: ActivityForm());
-    // Arranged around your goal: training first for muscle, the day's
-    // numbers first otherwise; fitness puts logging cardio before the gym.
+    final plan = ref.watch(planProvider).value;
+    final inProgress = ref.watch(workoutProvider).value != null;
+    final focus = goal == null || goal == MainGoal.fasting ? null : GoalFocusCard(goal: goal);
+    // This week's plan days first (or the card that makes a plan / resumes a
+    // workout); your goal's numbers above it, or below it when building muscle.
     final top = <Widget>[
-      if (goal != null && goal != MainGoal.fasting && goal != MainGoal.buildMuscle) GoalFocusCard(goal: goal),
-      ...switch (goal) {
-        MainGoal.buildMuscle => [workout, GoalFocusCard(goal: goal!)],
-        MainGoal.getFitter => [log, workout],
-        _ => [workout, log],
-      },
+      if (focus != null && goal != MainGoal.buildMuscle) focus,
+      if (plan == null || plan.days.isEmpty || inProgress) const _WorkoutCard(),
+      if (plan != null && plan.days.isNotEmpty) ...[WeekPlanSection(plan: plan), const _PlanLinks()],
+      if (focus != null && goal == MainGoal.buildMuscle) focus,
     ];
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
@@ -388,6 +388,10 @@ class ActivityScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         for (var i = 0; i < top.length; i++) ...[if (i > 0) const SizedBox(height: 14), top[i]],
+        const SizedBox(height: 26),
+        MonoLabel(l.activityLogAnother),
+        const SizedBox(height: 12),
+        const RuvaCard(padding: EdgeInsets.all(18), child: ActivityForm()),
         const SizedBox(height: 26),
         MonoLabel(l.activityRecent),
         const SizedBox(height: 12),
@@ -481,6 +485,32 @@ class _WorkoutCard extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Under the week's cards: your plan, progress, the library, an empty workout.
+class _PlanLinks extends ConsumerWidget {
+  const _PlanLinks();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    Widget link(IconData icon, String label, VoidCallback onTap) =>
+        TextButton.icon(onPressed: onTap, icon: Icon(icon, size: 18), label: Text(label));
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      children: [
+        link(Icons.event_note_outlined, l.planYours, () => showPlan(context)),
+        link(Icons.insights_outlined, l.progressTitle, () => showProgress(context)),
+        link(Icons.menu_book_outlined, l.libraryBrowse, () => showExerciseLibrary(context)),
+        link(Icons.add, l.workoutEmptyStart, () async {
+          await ref.read(workoutProvider.notifier).start();
+          if (context.mounted) {
+            await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const WorkoutScreen()));
+          }
+        }),
+      ],
     );
   }
 }
