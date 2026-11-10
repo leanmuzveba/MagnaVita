@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:io' show SocketException;
 
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../core/config.dart';
 
 /// The signed-in person.
 class Account {
@@ -19,9 +16,9 @@ enum AuthProblem {
   emailTaken,
   weakPassword,
   emailNotConfirmed,
+  codeInvalid,
+  tooManyEmails,
   offline,
-  googleNotSetUp,
-  canceled,
   other,
 }
 
@@ -36,13 +33,24 @@ class AuthFailure implements Exception {
 /// What happened after signing up.
 enum SignUpResult { signedIn, confirmEmail }
 
-/// Accounts (Supabase Auth) and the profile row that goes with them.
+/// Accounts (Supabase Auth, email and password) and the profile row that
+/// goes with them. New accounts confirm their email with a code from the
+/// inbox; a forgotten password is reset with a code the same way.
 abstract class AccountService {
   Account? get current;
   Stream<Account?> get changes;
   Future<SignUpResult> signUp({required String name, required String email, required String password});
+
+  /// Confirms a new account with the code from the email, which signs in.
+  Future<void> confirmSignUp({required String email, required String code});
+  Future<void> resendSignUpCode(String email);
   Future<void> signIn({required String email, required String password});
-  Future<void> signInWithGoogle();
+
+  /// Emails a code for setting a new password.
+  Future<void> sendPasswordResetCode(String email);
+
+  /// Checks the code, sets [newPassword] and signs in.
+  Future<void> resetPassword({required String email, required String code, required String newPassword});
   Future<void> signOut();
   Future<void> deleteAccount();
 
@@ -57,11 +65,7 @@ class SupabaseAccountService implements AccountService {
 
   static Account? _account(User? u) => u == null
       ? null
-      : Account(
-          id: u.id,
-          email: u.email,
-          name: (u.userMetadata?['name'] ?? u.userMetadata?['full_name'] ?? '') as String,
-        );
+      : Account(id: u.id, email: u.email, name: (u.userMetadata?['name'] ?? '') as String);
 
   @override
   Account? get current => _account(_auth.currentUser);
@@ -80,17 +84,14 @@ class SupabaseAccountService implements AccountService {
         'user_already_exists' || 'email_exists' => AuthProblem.emailTaken,
         'weak_password' => AuthProblem.weakPassword,
         'email_not_confirmed' => AuthProblem.emailNotConfirmed,
+        'otp_expired' || 'otp_disabled' => AuthProblem.codeInvalid,
+        'over_email_send_rate_limit' || 'over_request_rate_limit' => AuthProblem.tooManyEmails,
         _ => AuthProblem.other,
       }, e.message);
     } on AuthRetryableFetchException {
       throw const AuthFailure(AuthProblem.offline);
     } on SocketException {
       throw const AuthFailure(AuthProblem.offline);
-    } on GoogleSignInException catch (e) {
-      throw AuthFailure(
-        e.code == GoogleSignInExceptionCode.canceled ? AuthProblem.canceled : AuthProblem.other,
-        e.description,
-      );
     } on AuthException catch (e) {
       throw AuthFailure(AuthProblem.other, e.message);
     }
@@ -106,31 +107,28 @@ class SupabaseAccountService implements AccountService {
       });
 
   @override
+  Future<void> confirmSignUp({required String email, required String code}) =>
+      _guard(() => _auth.verifyOTP(email: email, token: code, type: OtpType.signup));
+
+  @override
+  Future<void> resendSignUpCode(String email) => _guard(() => _auth.resend(email: email, type: OtpType.signup));
+
+  @override
   Future<void> signIn({required String email, required String password}) =>
       _guard(() => _auth.signInWithPassword(email: email, password: password));
 
-  bool _googleReady = false;
+  @override
+  Future<void> sendPasswordResetCode(String email) => _guard(() => _auth.resetPasswordForEmail(email));
 
   @override
-  Future<void> signInWithGoogle() => _guard(() async {
-    if (googleWebClientId.isEmpty) throw const AuthFailure(AuthProblem.googleNotSetUp);
-    final google = GoogleSignIn.instance;
-    if (!_googleReady) {
-      await google.initialize(serverClientId: googleWebClientId);
-      _googleReady = true;
-    }
-    final user = await google.authenticate(scopeHint: const ['email', 'profile']);
-    final idToken = user.authentication.idToken;
-    if (idToken == null) throw const AuthFailure(AuthProblem.other, 'No ID token from Google');
-    final auth = await user.authorizationClient.authorizationForScopes(const ['email', 'profile']);
-    await _auth.signInWithIdToken(provider: OAuthProvider.google, idToken: idToken, accessToken: auth?.accessToken);
-  });
+  Future<void> resetPassword({required String email, required String code, required String newPassword}) =>
+      _guard(() async {
+        await _auth.verifyOTP(email: email, token: code, type: OtpType.recovery);
+        await _auth.updateUser(UserAttributes(password: newPassword));
+      });
 
   @override
-  Future<void> signOut() => _guard(() async {
-    await _auth.signOut();
-    if (_googleReady) await GoogleSignIn.instance.signOut();
-  });
+  Future<void> signOut() => _guard(() => _auth.signOut());
 
   @override
   Future<void> deleteAccount() => _guard(() async {

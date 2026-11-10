@@ -75,14 +75,17 @@ Future<void> loadAppFonts() async {
 }
 
 /// Accounts without a server: one known user, a profile row in memory.
+/// Emailed codes are always [code]; [sent] records each email.
 class FakeAccountService implements AccountService {
-  FakeAccountService({this.confirmEmail = false});
+  FakeAccountService({this.confirmEmail = true});
 
-  /// Sign-up needs an email confirmation before signing in.
+  /// Sign-up needs the emailed code before signing in (Supabase "Confirm email").
   bool confirmEmail;
+  static const code = '123456';
   final users = <String, ({String password, String name})>{'ann@example.com': (password: 'correct horse', name: 'Ann')};
+  final unconfirmed = <String>{};
+  final sent = <String>[];
   Map<String, dynamic>? profile;
-  bool googleWorks = false;
   bool deleted = false;
   Account? _current;
   final _changes = StreamController<Account?>.broadcast();
@@ -103,22 +106,44 @@ class FakeAccountService implements AccountService {
     if (users.containsKey(email)) throw const AuthFailure(AuthProblem.emailTaken);
     users[email] = (password: password, name: name);
     profile = {'display_name': name};
-    if (confirmEmail) return SignUpResult.confirmEmail;
+    if (confirmEmail) {
+      unconfirmed.add(email);
+      sent.add('signup:$email');
+      return SignUpResult.confirmEmail;
+    }
     _set(Account(id: email, email: email, name: name));
     return SignUpResult.signedIn;
   }
 
   @override
+  Future<void> confirmSignUp({required String email, required String code}) async {
+    if (!unconfirmed.contains(email) || code != FakeAccountService.code) {
+      throw const AuthFailure(AuthProblem.codeInvalid);
+    }
+    unconfirmed.remove(email);
+    _set(Account(id: email, email: email, name: users[email]!.name));
+  }
+
+  @override
+  Future<void> resendSignUpCode(String email) async => sent.add('signup:$email');
+
+  @override
   Future<void> signIn({required String email, required String password}) async {
     final u = users[email];
     if (u == null || u.password != password) throw const AuthFailure(AuthProblem.invalidCredentials);
+    if (unconfirmed.contains(email)) throw const AuthFailure(AuthProblem.emailNotConfirmed);
     _set(Account(id: email, email: email, name: u.name));
   }
 
   @override
-  Future<void> signInWithGoogle() async {
-    if (!googleWorks) throw const AuthFailure(AuthProblem.googleNotSetUp);
-    _set(const Account(id: 'g', email: 'g@gmail.com', name: 'Gee'));
+  Future<void> sendPasswordResetCode(String email) async => sent.add('reset:$email');
+
+  @override
+  Future<void> resetPassword({required String email, required String code, required String newPassword}) async {
+    final u = users[email];
+    if (u == null || code != FakeAccountService.code) throw const AuthFailure(AuthProblem.codeInvalid);
+    users[email] = (password: newPassword, name: u.name);
+    _set(Account(id: email, email: email, name: u.name));
   }
 
   @override

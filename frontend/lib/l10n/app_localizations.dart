@@ -3859,18 +3859,6 @@ abstract class AppLocalizations {
   /// **'Sign in'**
   String get authSignIn;
 
-  /// No description provided for @authOr.
-  ///
-  /// In en, this message translates to:
-  /// **'or'**
-  String get authOr;
-
-  /// No description provided for @authGoogle.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue with Google'**
-  String get authGoogle;
-
   /// No description provided for @authHaveAccount.
   ///
   /// In en, this message translates to:
@@ -3913,12 +3901,6 @@ abstract class AppLocalizations {
   /// **'Use at least {count} characters.'**
   String authPasswordShort(int count);
 
-  /// No description provided for @authConfirmEmail.
-  ///
-  /// In en, this message translates to:
-  /// **'Almost there: we sent a link to {email}. Tap it to confirm, then sign in here.'**
-  String authConfirmEmail(String email);
-
   /// No description provided for @authWrongPassword.
   ///
   /// In en, this message translates to:
@@ -3940,7 +3922,7 @@ abstract class AppLocalizations {
   /// No description provided for @authNotConfirmed.
   ///
   /// In en, this message translates to:
-  /// **'Please confirm your email first — check your inbox for the link.'**
+  /// **'Please confirm your email first. We’ve sent you a new code.'**
   String get authNotConfirmed;
 
   /// No description provided for @authOffline.
@@ -3949,23 +3931,137 @@ abstract class AppLocalizations {
   /// **'You’re offline. Connect to the internet and try again.'**
   String get authOffline;
 
-  /// No description provided for @authGoogleNotSetUp.
-  ///
-  /// In en, this message translates to:
-  /// **'Google sign-in isn’t available yet. Use your email for now.'**
-  String get authGoogleNotSetUp;
-
-  /// No description provided for @authCanceled.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign-in was cancelled.'**
-  String get authCanceled;
-
   /// No description provided for @authFailed.
   ///
   /// In en, this message translates to:
   /// **'Something went wrong. Please try again.'**
   String get authFailed;
+
+  /// No description provided for @authConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email'**
+  String get authConfirmTitle;
+
+  /// No description provided for @authConfirmIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a code to {email}. Enter it here to confirm your account.'**
+  String authConfirmIntro(String email);
+
+  /// No description provided for @authCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code from the email'**
+  String get authCode;
+
+  /// No description provided for @authCodeFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code from the email (numbers only).'**
+  String get authCodeFormat;
+
+  /// No description provided for @authCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That code is wrong or has expired. Check the latest email, or send a new code.'**
+  String get authCodeInvalid;
+
+  /// No description provided for @authCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Code sent to {email}.'**
+  String authCodeSent(String email);
+
+  /// No description provided for @authCodeResent.
+  ///
+  /// In en, this message translates to:
+  /// **'A new code is on its way to {email}.'**
+  String authCodeResent(String email);
+
+  /// No description provided for @authConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get authConfirm;
+
+  /// No description provided for @authResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code'**
+  String get authResend;
+
+  /// No description provided for @authCheckSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Can’t find it? Check your spam or promotions folder.'**
+  String get authCheckSpam;
+
+  /// No description provided for @authBackToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get authBackToSignIn;
+
+  /// No description provided for @authForgot.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get authForgot;
+
+  /// No description provided for @authForgotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset your password'**
+  String get authForgotTitle;
+
+  /// No description provided for @authForgotIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your account’s email and we’ll send you a code.'**
+  String get authForgotIntro;
+
+  /// No description provided for @authSendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get authSendCode;
+
+  /// No description provided for @authResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new password'**
+  String get authResetTitle;
+
+  /// No description provided for @authResetIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code we sent to {email} and a new password.'**
+  String authResetIntro(String email);
+
+  /// No description provided for @authResetSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Code sent to {email}.'**
+  String authResetSent(String email);
+
+  /// No description provided for @authNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get authNewPassword;
+
+  /// No description provided for @authResetSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and sign in'**
+  String get authResetSave;
+
+  /// No description provided for @authTooManyEmails.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many emails were sent just now. Wait a minute, then try again.'**
+  String get authTooManyEmails;
 
   /// No description provided for @accountSection.
   ///

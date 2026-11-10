@@ -2209,12 +2209,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSignIn => 'Sign in';
 
   @override
-  String get authOr => 'or';
-
-  @override
-  String get authGoogle => 'Continue with Google';
-
-  @override
   String get authHaveAccount => 'Already have an account? Sign in';
 
   @override
@@ -2238,11 +2232,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String authConfirmEmail(String email) {
-    return 'Almost there: we sent a link to $email. Tap it to confirm, then sign in here.';
-  }
-
-  @override
   String get authWrongPassword => 'That email and password don’t match.';
 
   @override
@@ -2252,19 +2241,86 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authWeakPassword => 'That password is too easy to guess. Try a longer one.';
 
   @override
-  String get authNotConfirmed => 'Please confirm your email first — check your inbox for the link.';
+  String get authNotConfirmed => 'Please confirm your email first. We’ve sent you a new code.';
 
   @override
   String get authOffline => 'You’re offline. Connect to the internet and try again.';
 
   @override
-  String get authGoogleNotSetUp => 'Google sign-in isn’t available yet. Use your email for now.';
-
-  @override
-  String get authCanceled => 'Sign-in was cancelled.';
-
-  @override
   String get authFailed => 'Something went wrong. Please try again.';
+
+  @override
+  String get authConfirmTitle => 'Check your email';
+
+  @override
+  String authConfirmIntro(String email) {
+    return 'We sent a code to $email. Enter it here to confirm your account.';
+  }
+
+  @override
+  String get authCode => 'Code from the email';
+
+  @override
+  String get authCodeFormat => 'Enter the code from the email (numbers only).';
+
+  @override
+  String get authCodeInvalid => 'That code is wrong or has expired. Check the latest email, or send a new code.';
+
+  @override
+  String authCodeSent(String email) {
+    return 'Code sent to $email.';
+  }
+
+  @override
+  String authCodeResent(String email) {
+    return 'A new code is on its way to $email.';
+  }
+
+  @override
+  String get authConfirm => 'Confirm';
+
+  @override
+  String get authResend => 'Send a new code';
+
+  @override
+  String get authCheckSpam => 'Can’t find it? Check your spam or promotions folder.';
+
+  @override
+  String get authBackToSignIn => 'Back to sign in';
+
+  @override
+  String get authForgot => 'Forgot your password?';
+
+  @override
+  String get authForgotTitle => 'Reset your password';
+
+  @override
+  String get authForgotIntro => 'Enter your account’s email and we’ll send you a code.';
+
+  @override
+  String get authSendCode => 'Send code';
+
+  @override
+  String get authResetTitle => 'Choose a new password';
+
+  @override
+  String authResetIntro(String email) {
+    return 'Enter the code we sent to $email and a new password.';
+  }
+
+  @override
+  String authResetSent(String email) {
+    return 'Code sent to $email.';
+  }
+
+  @override
+  String get authNewPassword => 'New password';
+
+  @override
+  String get authResetSave => 'Save and sign in';
+
+  @override
+  String get authTooManyEmails => 'Too many emails were sent just now. Wait a minute, then try again.';
 
   @override
   String get accountSection => 'Account';
