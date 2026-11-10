@@ -250,7 +250,7 @@ Priority: **M** = must, **S** = should, **C** = could. Status: ✅ implemented, 
 | Google Gemini | Meal photo, grocery photo, recipe drafts | Optional, user's own key |
 | Health Connect | Steps, calories, watch workouts | Optional, read-only |
 | Supabase | Accounts (email and password, codes by email) and the profile/goals row | Optional |
-| Brevo | Sends the code emails (Supabase custom SMTP) | With accounts |
+| Brevo | Sends the code emails (API, called by a Supabase Send Email hook) | With accounts |
 | Vercel (ruva-releases) | APK download and `version.json` update check | Optional |
 
 ## 8. Out of scope

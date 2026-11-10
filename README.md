@@ -85,7 +85,7 @@ MagnaVita/
 | Notifications | `flutter_local_notifications` |
 | Health | `health` (Health Connect), `pedometer` |
 | Device | `mobile_scanner`, `image_picker`, `file_picker`, `share_plus` |
-| Accounts | Supabase Auth (email + password, codes by email) + `profiles` table with Row Level Security; emails sent through Brevo SMTP |
+| Accounts | Supabase Auth (email + password, codes by email) + `profiles` table with Row Level Security; emails sent through Brevo's API by a Supabase Send Email hook (`backend/supabase/functions/send-email`) |
 | Online (optional) | TheMealDB, Open Food Facts, Google Gemini, free-exercise-db photos |
 
 ## Brand
@@ -106,7 +106,7 @@ Photo estimates, grocery photos and AI recipes need a Gemini API key, entered on
 
 ### Accounts (Supabase)
 
-The project URL and publishable key are in `frontend/lib/core/config.dart` (both are public by design; never put the service-role key, SMTP key or a Brevo API key in the app). The one-time dashboard setup (database, Brevo SMTP, code email templates) is in [backend/README.md](backend/README.md).
+The project URL and publishable key are in `frontend/lib/core/config.dart` (both are public by design; never put the service-role key or the Brevo API key in the app; the Brevo key lives only in Supabase's secrets). The one-time dashboard setup (database, email function, hook, secrets) is in [backend/README.md](backend/README.md).
 
 ## Releasing
 
