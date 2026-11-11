@@ -3154,7 +3154,7 @@ abstract class AppLocalizations {
   /// No description provided for @photoCheck.
   ///
   /// In en, this message translates to:
-  /// **'AI estimate — check every item before adding. Rename anything it got wrong and adjust the amounts. Photo estimates are often 20–40% off, especially for oil, sauces and hidden ingredients.'**
+  /// **'AI estimate — check every item before adding. Rename anything it got wrong and adjust the amounts.'**
   String get photoCheck;
 
   /// No description provided for @photoItems.

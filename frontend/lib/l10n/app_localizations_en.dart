@@ -1776,7 +1776,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get photoCheck =>
-      'AI estimate — check every item before adding. Rename anything it got wrong and adjust the amounts. Photo estimates are often 20–40% off, especially for oil, sauces and hidden ingredients.';
+      'AI estimate — check every item before adding. Rename anything it got wrong and adjust the amounts.';
 
   @override
   String photoItems(int count) {

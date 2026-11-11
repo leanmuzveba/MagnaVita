@@ -603,7 +603,7 @@
   "photoTitle": "Snap a meal photo",
   "photoYourPhoto": "Your meal photo",
   "photoEstimating": "Estimating what’s on the plate…",
-  "photoCheck": "AI estimate — check every item before adding. Rename anything it got wrong and adjust the amounts. Photo estimates are often 20–40% off, especially for oil, sauces and hidden ingredients.",
+  "photoCheck": "AI estimate — check every item before adding. Rename anything it got wrong and adjust the amounts.",
   "photoItems": "{count, plural, =1{1 item found} other{{count} items found}}",
   "@photoItems": {"placeholders": {"count": {"type": "int"}}},
   "photoRename": "Rename {name}",
