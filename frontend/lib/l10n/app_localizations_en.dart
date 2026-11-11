@@ -311,13 +311,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPrivacy => 'Privacy & data';
 
   @override
-  String get settingsDataStays => 'Your data stays on this phone';
-
-  @override
-  String get settingsDataStaysSub =>
-      'Nothing is uploaded or shared. There are no accounts or ads. Recipe search sends only ingredient names and search words to TheMealDB; barcode scans send only the barcode number to Open Food Facts; meal photos are sent to Google Gemini.';
-
-  @override
   String get settingsBackup => 'Back up my data';
 
   @override

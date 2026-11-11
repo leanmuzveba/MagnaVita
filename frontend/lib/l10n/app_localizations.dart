@@ -619,18 +619,6 @@ abstract class AppLocalizations {
   /// **'Privacy & data'**
   String get settingsPrivacy;
 
-  /// No description provided for @settingsDataStays.
-  ///
-  /// In en, this message translates to:
-  /// **'Your data stays on this phone'**
-  String get settingsDataStays;
-
-  /// No description provided for @settingsDataStaysSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing is uploaded or shared. There are no accounts or ads. Recipe search sends only ingredient names and search words to TheMealDB; barcode scans send only the barcode number to Open Food Facts; meal photos are sent to Google Gemini.'**
-  String get settingsDataStaysSub;
-
   /// No description provided for @settingsBackup.
   ///
   /// In en, this message translates to:

@@ -247,7 +247,6 @@ class SettingsScreen extends ConsumerWidget {
         _SectionLabel(l.settingsPrivacy),
         _Group(
           children: [
-            _NavRow(icon: Icons.lock_outline, title: l.settingsDataStays, subtitle: l.settingsDataStaysSub),
             _NavRow(
               icon: Icons.cloud_upload_outlined,
               title: l.settingsBackup,

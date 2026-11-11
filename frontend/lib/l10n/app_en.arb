@@ -117,8 +117,6 @@
   "settingsReminderTime": "Reminder time",
   "settingsNotificationsBlocked": "Notifications are turned off for this app in your phone’s settings.",
   "settingsPrivacy": "Privacy & data",
-  "settingsDataStays": "Your data stays on this phone",
-  "settingsDataStaysSub": "Nothing is uploaded or shared. There are no accounts or ads. Recipe search sends only ingredient names and search words to TheMealDB; barcode scans send only the barcode number to Open Food Facts; meal photos are sent to Google Gemini.",
   "settingsBackup": "Back up my data",
   "settingsBackupSub": "Save a backup file to Google Drive, email or Files. Your Gemini key isn’t included.",
   "settingsRestore": "Restore from a backup",
