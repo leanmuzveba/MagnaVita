@@ -4261,12 +4261,6 @@ abstract class AppLocalizations {
   /// **'Your Activity and Home pages are arranged around it. Change it any time in Profile.'**
   String get setupGoalSub;
 
-  /// No description provided for @setupGoalSafety.
-  ///
-  /// In en, this message translates to:
-  /// **'MagnaVita never suggests a goal below a healthy weight for your height, or eating less than your body needs at rest.'**
-  String get setupGoalSafety;
-
   /// No description provided for @setupActivityTitle.
   ///
   /// In en, this message translates to:

@@ -824,7 +824,6 @@
   "setupWeightSub": "Your starting point. It stays private, and you can turn weight tracking off later.",
   "setupGoalTitle": "What’s your main goal?",
   "setupGoalSub": "Your Activity and Home pages are arranged around it. Change it any time in Profile.",
-  "setupGoalSafety": "MagnaVita never suggests a goal below a healthy weight for your height, or eating less than your body needs at rest.",
   "setupActivityTitle": "How active are you?",
   "setupActivitySub": "On a usual day, before any changes.",
   "setupActivityLater": "After a week of logged activities or steps, MagnaVita works this out from your records instead.",

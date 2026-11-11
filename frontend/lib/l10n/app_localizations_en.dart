@@ -2424,10 +2424,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setupGoalSub => 'Your Activity and Home pages are arranged around it. Change it any time in Profile.';
 
   @override
-  String get setupGoalSafety =>
-      'MagnaVita never suggests a goal below a healthy weight for your height, or eating less than your body needs at rest.';
-
-  @override
   String get setupActivityTitle => 'How active are you?';
 
   @override

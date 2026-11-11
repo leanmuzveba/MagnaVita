@@ -492,8 +492,6 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         (p) => l.goalPacePerWeek(formatPace(p, imperial: _imp)),
         (p) => _pace = p,
       ),
-      const SizedBox(height: 8),
-      Text(l.setupGoalSafety, style: AppText.small.copyWith(fontSize: 12.5)),
     ],
   ];
 
