@@ -2184,10 +2184,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSignInTitle => 'Welcome back';
 
   @override
-  String get authWhy =>
-      'Your account keeps your profile and goals safe, so signing in on a new phone brings them back. Your diary, kitchen and workouts stay on this phone.';
-
-  @override
   String get authName => 'Name';
 
   @override
@@ -2216,9 +2212,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authSkip => 'Continue without an account';
-
-  @override
-  String get authSkipSub => 'Everything stays on this phone only. You can sign in later in Profile → Account.';
 
   @override
   String get authNameNeeded => 'Please enter your name.';

@@ -162,8 +162,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final (title, intro, action) = switch (_mode) {
-      _Mode.signUp => (l.authCreateTitle, l.authWhy, l.authCreate),
-      _Mode.signIn => (l.authSignInTitle, l.authWhy, l.authSignIn),
+      _Mode.signUp => (l.authCreateTitle, null, l.authCreate),
+      _Mode.signIn => (l.authSignInTitle, null, l.authSignIn),
       _Mode.confirm => (l.authConfirmTitle, l.authConfirmIntro(_email), l.authConfirm),
       _Mode.forgot => (l.authForgotTitle, l.authForgotIntro, l.authSendCode),
       _Mode.reset => (l.authResetTitle, l.authResetIntro(_email), l.authResetSave),
@@ -181,11 +181,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         onPressed: () => setState(() => _showPassword = !_showPassword),
       ),
     );
-    final codeField = _CodeField(
-      controller: _code,
-      label: l.authCode,
-      errorText: _codeError,
-    );
+    final codeField = _CodeField(controller: _code, label: l.authCode, errorText: _codeError);
     Widget link(String text, VoidCallback onTap) => TextButton(
       style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
       onPressed: _busy ? null : onTap,
@@ -196,74 +192,87 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       appBar: widget.fromSettings ? AppBar(backgroundColor: Colors.transparent) : null,
       body: SafeArea(
         child: AutofillGroup(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-            children: [
-              Row(
+          // A narrow, centred column with room on both sides.
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(40, 28, 40, 24),
                 children: [
-                  const RuvaLogo(size: 44, semanticLabel: null),
-                  const SizedBox(width: 10),
-                  Text(l.appName, style: AppText.brand),
+                  const Center(child: RuvaLogo(size: 64, semanticLabel: null)),
+                  const SizedBox(height: 8),
+                  Center(child: Text(l.appName, style: AppText.brand)),
+                  const SizedBox(height: 28),
+                  Semantics(
+                    header: true,
+                    child: Text(title, textAlign: TextAlign.center, style: AppText.title.copyWith(fontSize: 22)),
+                  ),
+                  if (intro != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      intro,
+                      textAlign: TextAlign.center,
+                      style: AppText.body.copyWith(color: AppColors.textSecondary),
+                    ),
+                  ],
+                  const SizedBox(height: 22),
+                  if (_mode == _Mode.signUp) ...[
+                    RuvaTextField(
+                      controller: _name,
+                      label: l.authName,
+                      errorText: _nameError,
+                      autofillHints: const [AutofillHints.name],
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+                  if (_mode case _Mode.signUp || _Mode.signIn || _Mode.forgot) ...[
+                    RuvaTextField(
+                      controller: _mail,
+                      label: l.authEmail,
+                      keyboardType: TextInputType.emailAddress,
+                      errorText: _mailError,
+                      autofillHints: const [AutofillHints.email],
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+                  if (_mode case _Mode.confirm || _Mode.reset) ...[codeField, const SizedBox(height: 14)],
+                  if (_mode case _Mode.signUp || _Mode.signIn || _Mode.reset) passwordField,
+                  if (_message != null) ...[
+                    const SizedBox(height: 14),
+                    Semantics(
+                      liveRegion: true,
+                      child: Text(_message!, style: AppText.body.copyWith(color: AppColors.primary)),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  PrimaryButton(label: action, onPressed: _busy ? null : _submit),
+                  const SizedBox(height: 8),
+                  ...switch (_mode) {
+                    _Mode.signUp => [link(l.authHaveAccount, () => _go(_Mode.signIn))],
+                    _Mode.signIn => [
+                      link(l.authForgot, () => _go(_Mode.forgot)),
+                      link(l.authNeedAccount, () => _go(_Mode.signUp)),
+                    ],
+                    _Mode.confirm || _Mode.reset => [
+                      link(l.authResend, _resend),
+                      Text(l.authCheckSpam, textAlign: TextAlign.center, style: AppText.small),
+                      link(l.authBackToSignIn, () => _go(_Mode.signIn)),
+                    ],
+                    _Mode.forgot => [link(l.authBackToSignIn, () => _go(_Mode.signIn))],
+                  },
+                  if (_busy)
+                    const Center(
+                      child: Padding(padding: EdgeInsets.all(8), child: CircularProgressIndicator()),
+                    ),
+                  if (!widget.fromSettings && (_mode == _Mode.signUp || _mode == _Mode.signIn)) ...[
+                    const Divider(height: 32, color: AppColors.divider),
+                    link(l.authSkip, () => ref.read(accountActionsProvider).useWithoutAccount()),
+                  ],
                 ],
               ),
-              const SizedBox(height: 28),
-              Semantics(header: true, child: Text(title, style: AppText.title.copyWith(fontSize: 22))),
-              const SizedBox(height: 6),
-              Text(intro, style: AppText.body.copyWith(color: AppColors.textSecondary)),
-              const SizedBox(height: 22),
-              if (_mode == _Mode.signUp) ...[
-                RuvaTextField(
-                  controller: _name,
-                  label: l.authName,
-                  errorText: _nameError,
-                  autofillHints: const [AutofillHints.name],
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-              ],
-              if (_mode case _Mode.signUp || _Mode.signIn || _Mode.forgot) ...[
-                RuvaTextField(
-                  controller: _mail,
-                  label: l.authEmail,
-                  keyboardType: TextInputType.emailAddress,
-                  errorText: _mailError,
-                  autofillHints: const [AutofillHints.email],
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-              ],
-              if (_mode case _Mode.confirm || _Mode.reset) ...[codeField, const SizedBox(height: 14)],
-              if (_mode case _Mode.signUp || _Mode.signIn || _Mode.reset) passwordField,
-              if (_message != null) ...[
-                const SizedBox(height: 14),
-                Semantics(
-                  liveRegion: true,
-                  child: Text(_message!, style: AppText.body.copyWith(color: AppColors.primary)),
-                ),
-              ],
-              const SizedBox(height: 20),
-              PrimaryButton(label: action, onPressed: _busy ? null : _submit),
-              const SizedBox(height: 8),
-              ...switch (_mode) {
-                _Mode.signUp => [link(l.authHaveAccount, () => _go(_Mode.signIn))],
-                _Mode.signIn => [
-                  link(l.authForgot, () => _go(_Mode.forgot)),
-                  link(l.authNeedAccount, () => _go(_Mode.signUp)),
-                ],
-                _Mode.confirm || _Mode.reset => [
-                  link(l.authResend, _resend),
-                  Text(l.authCheckSpam, textAlign: TextAlign.center, style: AppText.small),
-                  link(l.authBackToSignIn, () => _go(_Mode.signIn)),
-                ],
-                _Mode.forgot => [link(l.authBackToSignIn, () => _go(_Mode.signIn))],
-              },
-              if (_busy) const Center(child: Padding(padding: EdgeInsets.all(8), child: CircularProgressIndicator())),
-              if (!widget.fromSettings && (_mode == _Mode.signUp || _mode == _Mode.signIn)) ...[
-                const Divider(height: 32, color: AppColors.divider),
-                link(l.authSkip, () => ref.read(accountActionsProvider).useWithoutAccount()),
-                Text(l.authSkipSub, textAlign: TextAlign.center, style: AppText.small),
-              ],
-            ],
+            ),
           ),
         ),
       ),

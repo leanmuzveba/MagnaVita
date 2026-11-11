@@ -3811,12 +3811,6 @@ abstract class AppLocalizations {
   /// **'Welcome back'**
   String get authSignInTitle;
 
-  /// No description provided for @authWhy.
-  ///
-  /// In en, this message translates to:
-  /// **'Your account keeps your profile and goals safe, so signing in on a new phone brings them back. Your diary, kitchen and workouts stay on this phone.'**
-  String get authWhy;
-
   /// No description provided for @authName.
   ///
   /// In en, this message translates to:
@@ -3876,12 +3870,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue without an account'**
   String get authSkip;
-
-  /// No description provided for @authSkipSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Everything stays on this phone only. You can sign in later in Profile → Account.'**
-  String get authSkipSub;
 
   /// No description provided for @authNameNeeded.
   ///
